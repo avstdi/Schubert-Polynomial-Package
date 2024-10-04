@@ -1,46 +1,52 @@
+(* ::Package:: *)
+
+(*A package for computations related to combinatorics of Schubert polynomials and similar objects*)
+(*Primary Author: Avery St. Dizier*)
+(*Contributor: Elena Hafner*)
 BeginPackage["SchubertPolynomials`"];
 
-Memoization::usage="Memoization is an option to SchubertPolynomial, DoubleSchubertPolynomial, GrothendieckPolynomial, DoubleGrothendieckPolynomial, SchubertExpansion, and SchubertPolynomialQ that can be set to True or False to enable or disable the use of memoization in the corresponding computation. The defualt value is True.";
+BoxListQ::usage="BoxListQ[S] checks if S is a set of pairs of natural numbers.";
+Memoization::usage="Memoization is an option to SchubertPolynomial,DoubleSchubertPolynomial,GrothendieckPolynomial,DoubleGrothendieckPolynomial,SchubertExpansion,GrothendieckExpansion,and SchubertPolynomialQ that can be set to True or False to enable or disable the use of memoization in the corresponding computation. The defualt value is True.";
 Reduced::usage="Reduced is an option to Mitosis that can be set to True or False to enable or disable the inclusion of nonreduced pipe dreams in the mitosis algorithm. The default value is True.";
-CrossColor::usage="CrossColor is an option to DrawPipeDream, that can be set to any color. The defualt value is Purple.";
-ElbowColor::usage="ElbowColor is an option to DrawPipeDream, that can be set to any color. The defualt value is Purple.";
+CrossColor::usage="CrossColor is an option to DrawPipeDream,that can be set to any color. The defualt value is Purple.";
+ElbowColor::usage="ElbowColor is an option to DrawPipeDream,that can be set to any color. The defualt value is Purple.";
 Labels::usage="Labels is an option to DrawPipeDream and DrawBumplessPipeDream that can be set to True or False. The defualt value is True.";
 PermutationListForm::usage="PermutationListForm[w] converts the permutation w from the Cycles[] form into a list of numbers.";
 PipeDreamQ::usage="PipeDreamQ[P] checks if P is a matrix of zeros and ones that is a pipe dream when zeros are viewed as elbows and ones as crossings. ";
 PipeDreamToPermutation::usage = "PipeDreamToPermutation[P] returns the permutation represented by the pipe dream P.";
 PipeDreams::usage = "PipeDreams[w] returns all pipe dreams (reduced and nonreduced) of the permutation w.";
 DrawPipeDream::usage="DrawPipeDream[P] gives a visual representation of the pipe dream defined by the matrix P.";
-Inversions::usage="Inversions[w] returns the inversion set of the permutation w, the set of all (i,j) with i<j such that w(i)>w(j).";
+Inversions::usage="Inversions[w] returns the inversion set of the permutation w,the set of all (i,j) with i<j such that w(i)>w(j).";
 NumberInversions::usage = "NumberInversions[w] returns the number of inversions of the permutation w.";
 ReducedPipeDreamQ::usage = "ReducedPipeDreamQ[P] returns True if P is a reduced pipe dream and False otherwise .";
 ReducedPipeDreams::usage = "ReducedPipeDreams[w] returns the set of all reduced pipe dreams of the permutation w.";
 GrothendieckPolynomial::usage = "GrothendieckPolynomial[w] returns the Grothendieck polynomial of w in variables x[i]. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
 BetaGrothendieckPolynomial::usage = "BetaGrothendieckPolynomial[w] returns the beta Grothendieck polynomial of w in variables x[i] and b.";
 DoubleGrothendieckPolynomial::usage = "DoubleGrothendieckPolynomial[w] returns the double Grothendieck polynomial of w in variables x[i] and y[j]. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
-BetaDoubleGrothendieckPolynomial::usage="BetaDoubleGrothendieckPolynomial[w] returns the beta double Grothendieck polynomial of w in variables x[i], y[j], and b.";
+BetaDoubleGrothendieckPolynomial::usage="BetaDoubleGrothendieckPolynomial[w] returns the beta double Grothendieck polynomial of w in variables x[i],y[j],and b.";
 SchubertPolynomial::usage = "SchubertPolynomial[w] returns the Schubert polynomial of w in variables x[i]. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
-Descents::usage = "Descents[w] returns the descent set of the permutation w, the set of all i such that w(i)>w(i+1).";
-Ascents::usage = "Ascents[w] returns the ascent set of the permutation w, the set of all i such that w(i)<w(i+1).";
+Descents::usage = "Descents[w] returns the descent set of the permutation w,the set of all i such that w(i)>w(i+1).";
+Ascents::usage = "Ascents[w] returns the ascent set of the permutation w,the set of all i such that w(i)<w(i+1).";
 Transposition::usage = "Transposition[i,j] returns the transposition swapping i and j.";
-TransitionRule::usage = "TransitionRule[w] returns {{r,v},trans(w)} where \!\(\*SubscriptBox[\(S\), \(w\)]\)=x[r] \!\(\*SubscriptBox[\(S\), \(v\)]\)+\!\(\*UnderscriptBox[\(\[Sum]\), \(trans \((w)\)\)]\)\!\(\*SubscriptBox[\(S\), \(\[Sigma]\)]\).";
+TransitionRule::usage = "TransitionRule[w] returns {{r,v},trans(w)} where \!\(\*SubscriptBox[\(S\),\(w\)]\)=x[r] \!\(\*SubscriptBox[\(S\),\(v\)]\)+\!\(\*UnderscriptBox[\(\[Sum]\),\(trans \((w)\)\)]\)\!\(\*SubscriptBox[\(S\),\(\[Sigma]\)]\).";
 DoubleSchubertPolynomial::usage = "DoubleSchubertPolynomial[w] returns the double Schubert polynomial of w in variables x[i] and y[j]. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
-Letter::usage ="Letter[i] returns the adjacent transposition (i i+1) (in \!\(\*SubscriptBox[\(S\), \(i + 1\)]\)).";
-ReducedWords::usage ="ReducedWords[w] returns the set of all the reduced words {\!\(\*SubscriptBox[\(i\), \(1\)]\),...,\!\(\*SubscriptBox[\(i\), \(k\)]\)} such that for \!\(\*SubscriptBox[\(s\), \(j\)]\) the transposition (j j+1), w(k)=\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(k\)]]\)(\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(k - 1\)]]\)(...(\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(1\)]]\)(k)).";
-ReducedWord::usage="ReducedWord[w] returns a a reduced word {\!\(\*SubscriptBox[\(i\), \(1\)]\),...,\!\(\*SubscriptBox[\(i\), \(k\)]\)} such that for \!\(\*SubscriptBox[\(s\), \(j\)]\) the transposition (j j+1), w(k)=\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(k\)]]\)(\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(k - 1\)]]\)(...(\!\(\*SubscriptBox[\(s\), SubscriptBox[\(i\), \(1\)]]\)(k)).";
+Letter::usage ="Letter[i] returns the adjacent transposition (i i+1) (in \!\(\*SubscriptBox[\(S\),\(i + 1\)]\)).";
+ReducedWords::usage ="ReducedWords[w] returns the set of all the reduced words {\!\(\*SubscriptBox[\(i\),\(1\)]\),...,\!\(\*SubscriptBox[\(i\),\(k\)]\)} such that for \!\(\*SubscriptBox[\(s\),\(j\)]\) the transposition (j j+1),w(k)=\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(k\)]]\)(\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(k - 1\)]]\)(...(\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(1\)]]\)(k)).";
+ReducedWord::usage="ReducedWord[w] returns a a reduced word {\!\(\*SubscriptBox[\(i\),\(1\)]\),...,\!\(\*SubscriptBox[\(i\),\(k\)]\)} such that for \!\(\*SubscriptBox[\(s\),\(j\)]\) the transposition (j j+1),w(k)=\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(k\)]]\)(\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(k - 1\)]]\)(...(\!\(\*SubscriptBox[\(s\),SubscriptBox[\(i\),\(1\)]]\)(k)).";
 DividedDifference::usage ="DividedDifference[i,f] returns the ith divided difference of the polynomial f in variables {x[j]}.";
 IsobaricDividedDifference::usage="IsobaricDividedDifference[i,f] returns the ith isobaric divided difference of the polynomial f in variables {x[j]}.";
 LehmerCode::usage = "LehmerCode[w] returns the Lehmer code of the permutation w.";
 LehmerCodeToPermutation::usage = "LehmerCodeToPermutation[c] returns the permutation w with Lehmer code c.";
-OneFixedDominantQ::usage = "OneFixedDominantQ[w] returns True if w is of the form w=1w' where w' is dominant on {2,3,...,n} and False otherwise." ;
-CoreRegion::usage = "CoreRegion[w] returns the core region of the permutation w, the possible squares where crosses can occur in pipe dreams.";
-RotheDiagram::usage = "RotheDiagram[w] returns the Rothe diagram of the permutation w, the set of all (i,j) in [n\!\(\*SuperscriptBox[\(]\), \(2\)]\) such that w(i)>j and \!\(\*SuperscriptBox[\(w\), \(-1\)]\)(j)>i.";
+OneFixedDominantQ::usage = "OneFixedDominantQ[w] returns True if w is of the form w=1w' where w' is dominant on {2,3,...,n} and False otherwise.";
+RotheDiagram::usage = "RotheDiagram[w] returns the Rothe diagram of the permutation w,the set of all (i,j) in [n\!\(\*SuperscriptBox[\(]\),\(2\)]\) such that w(i)>j and \!\(\*SuperscriptBox[\(w\),\(-1\)]\)(j)>i.";
 BottomReducedPipeDream::usage = "BottomReducedPipeDream[w] returns the bottom reduced pipe dream of the permutation w.";
 TopReducedPipeDream::usage = "TopReducedPipeDream[w] returns the top reduced pipe dream of the permutation w.";
-AvoidsPattern::usage="AvoidsPattern[\[Sigma],\[Tau]] checks if the permutation sigma avoids the permutation pattern tau.";
-GeneralizedPermutahedronZVector::usage="GeneralizedPermutahedronZVector[pointlist] returns the \!\(\*SubscriptBox[\(z\), \(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
+AvoidsPattern::usage="AvoidsPattern[w,\[Sigma]] checks if the permutation w avoids the pattern \[Sigma].";
+PermutationPatternIndices::usage="PermutationPatternIndices[w,\[Sigma]] returns the set of indices of instances of the pattern \[Sigma] inside the permutation w.";
+GeneralizedPermutahedronZVector::usage="GeneralizedPermutahedronZVector[pointlist] returns the \!\(\*SubscriptBox[\(z\),\(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
 GeneralizedPermutahedronInequalities::usage="GeneralizedPermutahedronInequalities[pointlist] returns the defining inequalities for the smallest generalized permutahedron containing pointlist.";
-GeneralizedPermutahedronYVector::usage="GeneralizedPermutahedronYVector[pointlist] returns the \!\(\*SubscriptBox[\(y\), \(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
-MConvexSetQ::usage="MConvexSetQ[J] checks whether or not J is an M-convex set, that is if J is exactly the set of integer points of a generalized permutahedron.";
+GeneralizedPermutahedronYVector::usage="GeneralizedPermutahedronYVector[pointlist] returns the \!\(\*SubscriptBox[\(y\),\(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
+MConvexSetQ::usage="MConvexSetQ[J] checks whether or not J is an M-convex set,that is if J is exactly the set of integer points of a generalized permutahedron.";
 Coefficients::usage="Coefficients[poly,vars] returns a list of the coefficients of the monomials occuring in the polynomial poly relative to the variables vars.\nCoefficients[poly] returns a list of the coefficients of monomials occuring in the polynomial poly relative to the variables detected in poly.";
 Exponents::usage="Exponents[poly,vars] returns a list of the exponent vectors of the polynomial poly relative to the variables vars.\nExponents[poly] returns a list of the exponent vectors of the polynomial poly relative to the variables detected in poly.";
 Monomials::usage="Monomials[poly,vars] returns a list of the terms of the polynomial poly relative to the variables vars.\nMonomials[poly] returns a list of the terms of the polynomial poly relative to the variables detected in poly.";
@@ -50,32 +56,36 @@ VexillaryQ::usage="VexillaryQ[w] checks whether the permutation w is vexillary."
 DrawRotheDiagram::usage="DrawRotheDiagram[w] prints a graphical representation of the Rothe diagram of the permutation w.";
 DemazureDifference::usage="DemazureDifference[i,f] returns the ith Demazure difference of the polynomial f in variables {x[j]}.";
 DemazureLascouxDifference::usage="DemazureLascouxDifference[i,f] returns the ith Demazure-Lascoux difference of the polynomial f in variables {x[j]}.";
+CompositionQ::usage="CompositionQ[alpha] checks whether the input vector alpha is a composition.";
+MinimalComposition::usage="MinimalComposition[alpha] removes trailing zeros from the input composition alpha.";
 KeyPolynomial::usage="KeyPolynomial[alpha] returns the key polynomial of the composition alpha.";
+LascouxPolynomial::usage="LascouxPolynomial[alpha] returns the Lascoux polynomial of the composition alpha, the inhomogeneous analogue of the key polynomial.";
 HomogeneousComponents::usage="HomogeneousComponents[poly,vars] returns a list of the homogeneous components of the polynomial poly relative to the variables vars.\nHomogeneousComponents[poly] returns a list of the homogeneous components of the polynomial poly relative to the variables detected in poly.";
 SymmetricPolynomialQ::usage="SymmetricPolynomialQ[poly,vars] returns true if the polynomial poly is symmetric with respect to the variables vars.";
 RankMatrix::usage="RankMatrix[w] returns the rank matrix of the permutation w.";
-BruhatOrderLessEqualQ::usage="BruhatOrderLessEqualQ[w,v] returns True if w\[LessEqual]v in the strong Bruhat order on \!\(\*SubscriptBox[\(S\), \(n\)]\).";
+BruhatOrderLessEqualQ::usage="BruhatOrderLessEqualQ[w,v] returns True if w\[LessEqual]v in the strong Bruhat order on \!\(\*SubscriptBox[\(S\),\(n\)]\).";
+UpperStrongBruhatCovers::usage="UpperStrongBruhatCovers[w] returns the list of permutations v in \!\(\*SubscriptBox[\(S\), \(n\)]\) that cover w in the strong Bruhat order.";
 MultiplicityPolynomials::usage="MultiplicityPolynomials[poly,vars] returns the set of polynomials obtained by decrementing the coefficients of poly until they are all zero.";
 XVariables::usage="XVariables[k] returns the list of variables {x[1],x[2],...,x[k]} for k a nonnegative integer.\nxvariables[w] returns the list of variables {x[1],x[2],...,x[n-1]} for w a permutation of [n].";
 XBVariables::usage="XBVariables[k] returns the list of variables {x[1],x[2],...,x[k],b} for k a nonnegative integer.\nxbvariables[w] returns the list of variables {x[1],x[2],...,x[n-1],b} for w a permutation of [n].";
 XYVariables::usage="XYVariables[k] returns the list of variables {x[1],x[2],...,x[k],y[1],y[2],...,y[k]} for k a nonnegative integer.\nxyvariables[w] returns the list of variables {x[1],x[2],...,x[n-1],y[1],y[2],...,y[k]} for w a permutation of [n].";
 XYBVariables::usage="XYBVariables[k] returns the list of variables {x[1],x[2],...,x[k],y[1],y[2],...,y[k],b} for k a nonnegative integer.\nxybvariables[w] returns the list of variables {x[1],x[2],...,x[n-1],y[1],y[2],...,y[k],b} for w a permutation of [n].";
-BruhatOrderLessEqualCoverQ::usage="bruhatLequalCover[w,v] returns True if w<v is a cover relation in the strong Bruhat order on \!\(\*SubscriptBox[\(S\), \(n\)]\).";
+BruhatOrderLessEqualCoverQ::usage="bruhatLequalCover[w,v] returns True if w<v is a cover relation in the strong Bruhat order on \!\(\*SubscriptBox[\(S\),\(n\)]\).";
 SkylineDiagram::usage="SkylineDiagram[alpha] returns the skyline diagram of the composition alpha.";
-BalancedLabelings::usage="BalancedLabelings[D] returns the set of balanced labellings of the diagram D each viewed as an integer matrix.";
+(*BalancedLabelings::usage="BalancedLabelings[D] returns the set of balanced labellings of the diagram D each viewed as an integer matrix.";*)
 PartitionQ::usage="PartitionQ[\[Lambda]] checks that \[Lambda] is a decreasing sequence of nonnegative numbers.";
-SchurPolynomial::usage="SchurPolynomial[\[Lambda], n] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[n]}.\nSchurPolynomial[\[Lambda]] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[m]}, where \[Lambda] has m parts.";
-WiringDiagram::usage="WiringDiagram[p] returns the wiring diagram of the permutation word p=(\!\(\*SubscriptBox[\(p\), \(1\)]\),\!\(\*SubscriptBox[\(p\), \(2\)]\),...,\!\(\*SubscriptBox[\(p\), \(m\)]\)), where the \!\(\*SubscriptBox[\(p\), \(i\)]\) are positive integers.";
-Schubitope::usage="For w in \!\(\*SubscriptBox[\(S\), \(n\)]\), Schubitope[w] returns the submodular function on subsets of [n] defining the Schubitope of w. ";
+SchurPolynomial::usage="SchurPolynomial[\[Lambda],n] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[n]}.\nSchurPolynomial[\[Lambda]] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[m]},where \[Lambda] has m parts.";
+WiringDiagram::usage="WiringDiagram[p] returns the wiring diagram of the permutation word p=(\!\(\*SubscriptBox[\(p\),\(1\)]\),\!\(\*SubscriptBox[\(p\),\(2\)]\),...,\!\(\*SubscriptBox[\(p\),\(m\)]\)),where the \!\(\*SubscriptBox[\(p\),\(i\)]\) are positive integers.";
+Schubitope::usage="For w in \!\(\*SubscriptBox[\(S\),\(n\)]\), Schubitope[w] returns the submodular function on subsets of [n] defining the Schubitope of w. ";
 SchubitopeDimension::usage="SchubitopeDimension[w] returns the dimension of the Schubitope of w.";
-ToZeroOneMatrix::usage="ToZeroOneMatrix[D] returns a matrix representation D, where D is a subset of [n] x [n].";
-KohnertMoveResults::usage="KohnertMoveResults[D] returns the set of Kohnert diagrams generated by a Kohnert move on D, the matrix of a diagram.";
-KohnertDiagrams::usage="KohnertDiagrams[D] returns the set of all Kohnert diagrams generated by any sequences of Kohnert moves on D, the matrix of a diagram.";
-KohnertWeight::usage="KohnertWeight[D] returns the vector weight of D, the matrix of a diagram.";
-KohnertPolynomial::usage="KohnertPolynomial[D] returns the polynomial generated by Kohnert diagrams of D, the matrix of a diagram.";
+ToZeroOneMatrix::usage="ToZeroOneMatrix[D] returns a matrix representation D,where D is a subset of [n] x [n].";
+KohnertMoveResults::usage="KohnertMoveResults[D] returns the set of Kohnert diagrams generated by a Kohnert move on D,the matrix of a diagram.";
+KohnertDiagrams::usage="KohnertDiagrams[D] returns the set of all Kohnert diagrams generated by any sequences of Kohnert moves on D,the matrix of a diagram.";
+KohnertWeight::usage="KohnertWeight[D] returns the vector weight of D,the matrix of a diagram.";
+KohnertPolynomial::usage="KohnertPolynomial[D] returns the polynomial generated by Kohnert diagrams of D,the matrix of a diagram.";
 RandomDiagram::usage="RandomDiagram[m,n] returns a random subset of [m] x [n] as a zero-one matrix.";
-DrawKohnertDiagram::usage="DrawKohnertDiagram[D] gives a visual representation of the Kohnert diagram D, repersentated by a matrix.";
-DrawDiagram::usage="DrawDiagram[D, {m,n}] takes a subset D of [m] x [n] and represents it visually in a grid.";
+DrawKohnertDiagram::usage="DrawKohnertDiagram[D] gives a visual representation of the Kohnert diagram D,repersentated by a matrix.";
+DrawDiagram::usage="DrawDiagram[D,{m,n}] takes a subset D of [m] x [n] and represents it visually in a grid.";
 ApplyKohnertMove::usage="ApplyKohnertMove[D,r] applies a Kohnert move to row r of the diagram D viewed as a matrix.";
 ApplyKohnertSequence::usage="ApplyKohnertSequence[D,s] applies the sequences s of Kohnert moves to the diagram D viewed as a matrix.";
 ValidKohnertMoveQ::usage="ValidKohnertMoveQ[D,r] checks that row r admits a valid Kohnert move in D.";
@@ -88,45 +98,50 @@ ApplyRightmostLadderMoveSequence::usage="ApplyRightmostLadderMoveSequence[P,s] a
 ValidRightmostLadderMoves::usage="ValidRightmostLadderMoves[P] returns the list of rows of P admitting a rightmost ladder move.";
 ValidRightmostLadderMoveSequenceQ::usage="ValidRightmostLadderMoveSequenceQ[P,s] checks that the sequence s of rightmost moves is a valid sequence on the pipe dream P.";
 ValidRightmostLadderMoveSequences::usage="ValidRightmostLadderMoveSequences[P] returns the list of all valid rightmost ladder move sequences on the pipe dream P.";
-PipeDreamWeight::usage="PipeDreamWeight[P] returns the weight of the pipe dream P, that is the vector whose \!\(\*SuperscriptBox[\(i\), \(th\)]\) entry is number of crosses in row i of P.";
-Mitosis::usage="Mitosis[i,P] applies the \!\(\*SuperscriptBox[\(i\), \(th\)]\) mitosis algorithm to the pipe dream P. Setting Reduced->True or False specifices whether to return reduced pipe dreams or all pipe dreams.";
-FultonEssentialSet::usage="FultonEssentialSet[w] returns the Fulton essential set of the permutation w, that is the boxes that are SE corners in the Rothe diagram of w.";
+PipeDreamWeight::usage="PipeDreamWeight[P] returns the weight of the pipe dream P,that is the vector whose \!\(\*SuperscriptBox[\(i\),\(th\)]\) entry is number of crosses in row i of P.";
+Mitosis::usage="Mitosis[i,P] applies the \!\(\*SuperscriptBox[\(i\),\(th\)]\) mitosis algorithm to the pipe dream P. Setting Reduced->True or False specifices whether to return reduced pipe dreams or all pipe dreams.";
+FultonEssentialSet::usage="FultonEssentialSet[w] returns the Fulton essential set of the permutation w,that is the boxes that are SE corners in the Rothe diagram of w.";
 FundamentalSlidePolynomial::usage="FundamentalSlidePolynomial[\[Alpha]] returns the fundamental slide polynomial of alpha.";
 Compositions::usage="Compositions[n,k] returns the integer compositions of n with at most k parts.\nCompositions[n,{k}] returns the integer compositions of n with exactly k parts.";
 FundamentalSlideExpansion::usage="FundamentalSlideExpansion[w] returns the list of compositions whose fundamental slide polynomials occur in the expansion of the Schubert polynomial of w.";
 MinimalPermutation::usage="MinimalPermutation[w] returns {w(1),...,w(n)} where w(i)=i for all i>n.";
-KeyExpansion::usage="KeyExpansion[w] returns the set of compositions whose key polynomials sum to the Schubert polynomial of w.";
+KeyExpansion::usage="KeyExpansion[f] returns the set of compositions whose key polynomials sum to the polynomial f.";
 SchubertExpansion::usage="SchubertExpansion[P] returns the list of permutations and list of coefficients that give the polynomial P in variables x[i] as a linear combination of Schubert polynomials. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
+GrothendieckExpansion::usage="GrothendieckExpansion[P] returns the list of permutations and list of coefficients that give the polynomial P in variables x[i] as a linear combination of Grothendieck polynomials. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
 NorthWestDiagramMatrixQ::usage="NorthWestDiagramMatrixQ[M] checks if M is the 01 matrix corresponding to a northwest diagram.";
-StronglySeparatedDiagramMatrixQ::usage="StronglySeparatedDiagramMatrixQ[M] checks if M is the 01 matrix corresponding to a strongly separated diagram.";
 SchubertPolynomialQ::usage="SchubertPolynomialQ[poly] checks whether or not poly is a Schubert polynomial in variables x[i]. Optional flag Memoization can be set to True or False to enable automatic storing of output.";
 PercentageAvoidingDiagramMatrixQ::usage="PercentageAvoidingDiagramMatrixQ[M] checks if M is the 01 matrix corresponding to a %-avoiding diagram.";
-MConvexSupportQ::usage="MConvexSupportQ[f] tests whether the support of the polynomial f is M-convex. That is, whether the Newton polytope of f is a generalized permutahedron and is saturated by f.";
-NormalizePolynomial::usage="NormalizePolynomial[f] returns the normalization of the polynomial f. Specifically, each term is divided by the product of factorials of its exponent vector.";
+MConvexSupportQ::usage="MConvexSupportQ[f] tests whether the support of the polynomial f is M-convex. That is,whether the Newton polytope of f is a generalized permutahedron and is saturated by f.";
+NormalizePolynomial::usage="NormalizePolynomial[f] returns the normalization of the polynomial f. Specifically,each term is divided by the product of factorials of its exponent vector.";
 QuadraticFormToMatrix::usage="QuadraticFormToMatrix[f,n] takes a quadratic form f in variables x[i] and the number n of such variables as inputs and computes the n by n matrix corresponding to f.";
-LorentzianPolynomialQ::usage="LorentzianPolynomialQ[h] checks whether the polynomial h is Lorentzian. That is, whether h has nonnegative coefficients, M-convex support, and satisfies the relevant derivative condition.";
+LorentzianPolynomialQ::usage="LorentzianPolynomialQ[h] checks whether the polynomial h is Lorentzian. That is,whether h has nonnegative coefficients,M-convex support,and satisfies the relevant derivative condition.";
 CheckNonnegativity::usage="CheckNonnegativity is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable the checking of nonnegative coefficients in the input polynomial. The defualt value is True.";
 CheckMConvexity::usage="CheckMConvexity is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable the checking of M-convexity of the support of the input polynomial. The defualt value is True.";
-HeckeReduce::usage="HeckeReduce[r] reduces the integer word r using the nilHecke relations \!\(\*SuperscriptBox[SubscriptBox[\(s\), \(i\)], \(2\)]\)=\!\(\*SubscriptBox[\(s\), \(i\)]\), \!\(\*SubscriptBox[\(s\), \(i\)]\)\!\(\*SubscriptBox[\(s\), \(i + 1\)]\)\!\(\*SubscriptBox[\(s\), \(i\)]\)=\!\(\*SubscriptBox[\(s\), \(i + 1\)]\)\!\(\*SubscriptBox[\(s\), \(i\)]\)\!\(\*SubscriptBox[\(s\), \(i + 1\)]\), and \!\(\*SubscriptBox[\(s\), \(i\)]\)\!\(\*SubscriptBox[\(s\), \(j\)]\)=\!\(\*SubscriptBox[\(s\), \(j\)]\)\!\(\*SubscriptBox[\(s\), \(i\)]\) (if |i-j|>1).";
+PrintFailure::usage="PrintFailure is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable printing the witness derivative sequence of the spectral condition failing in the input polynomial. The defualt value is False.";
+PrintReason::usage="PrintReason is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable printing the reason the the input polynomial is not Lorentzian. The defualt value is False.";
+HeckeReduce::usage="HeckeReduce[r] reduces the integer word r using the nilHecke relations \!\(\*SuperscriptBox[SubscriptBox[\(s\),\(i\)],\(2\)]\)=\!\(\*SubscriptBox[\(s\),\(i\)]\),\!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(i + 1\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\)=\!\(\*SubscriptBox[\(s\),\(i + 1\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(i + 1\)]\),and \!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(j\)]\)=\!\(\*SubscriptBox[\(s\),\(j\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\) (if |i-j|>1).";
 PolynomialDegree::usage="PolynomialDegree[f] returns the degree of the multivariable polynomial f.";
 RotheBPD::usage="RotheBPD[w] returns Rothe bumpless pipe dream for a given permutation w.";
 ASMQ::usage="ASMQ[P] tests whether a given square matrix P is an alternating sign matrix.";
-DroopMove::usage="DroopMove[P,i0,j0,imax,jmax] returns a pipe dream which differs from P by a droop move performed in the rectangle defined by the corners (i0,j0) and (imax, jmax).";
-DroopMoveQ::usage="DroopMoveQ[P,i0,j0,imax,jmax] tests whether it is possible to perform a valid droop move on the pipe dream P within the rectangle defined by the corners (i0,j0) and (imax, jmax).";
+DroopMove::usage="DroopMove[P,i0,j0,imax,jmax] returns a pipe dream which differs from P by a droop move performed in the rectangle defined by the corners (i0,j0) and (imax,jmax).";
+DroopMoveQ::usage="DroopMoveQ[P,i0,j0,imax,jmax] tests whether it is possible to perform a valid droop move on the pipe dream P within the rectangle defined by the corners (i0,j0) and (imax,jmax).";
 ReducedBumplessPipeDreams::usage="ReducedBumplessPipeDreams[w] generates all the reduced bumpless pipe dreams for the permutation w.";
+FullBPDData::usage="FullBPDData[P] returns a matrix encoding all tiles used in P. The encoding is: 'u' for upwards elbow, 'd' for downwards elbow, 'c' for crossing, 'v' for vertical pipe, 'h' for horizontal pipe, 'b' for blank";
 BPDtoPermutation::usage="BPDtoPermutation[P] returns the permutation associated with the bumpless pipe dream P.";
-DrawBumplessPipeDream::usage="DrawBumplessPipeDream[P] generates a visual representation of the bumpless pipe dream P (given as an alternating sign matrix).";
-PipeColor::usage="PipeColor is an option to DrawBumplessPipeDream and DrawMarkedBumplessPipeDream that can be set to any color.  The default value is green.";
-kDroop1::usage="kDroop1[P,i0,j0,imax,jmax] returns a bumpless pipe dream which differs from P by a k-theoretic droop move performed in the rectangle defined by the corners (i0,j0) and (imax, jmax).";
-KDroop1Q::usage="KDroop1Q[P,i0,j0,imax,jmax] tests whether it is possible to perform a k-theoretic droop move on the bumpless pipe dream P in the rectangle defined by the corners (i0,j0) and (imax, jmax).";
-kDroop2::usage="kDroop2[P,i0,j0,imax,jmax] returns a bumpless pipe dream which differs from P by a k-theoretic droop move performed in the rectangle defined by the corners (i0,j0) and (imax, jmax).";
-KDroop2Q::usage="KDroop2Q[P,i0,j0,imax,jmax] tests whether it is possible to perform a k-theoretic droop move on the bumpless pipe dream P in the rectangle defined by the corners (i0,j0) and (imax, jmax).";
+DrawBumplessPipeDream::usage="DrawBumplessPipeDream[P] generates a visual representation of the bumpless pipe dream P (given as an alternating sign matrix recording up elbows and down elbows).";
+PipeColor::usage="PipeColor is an option to DrawBumplessPipeDream and DrawMarkedBumplessPipeDream that can be set to any color. The default value is blue.";
+BlankColor::usage="BlankColor is an option to DrawBumplessPipeDream that can be set to any color. The default value is green.";
+kDroop1::usage="kDroop1[P,i0,j0,imax,jmax] returns a bumpless pipe dream which differs from P by a k-theoretic droop move performed in the rectangle defined by the corners (\!\(\*SubscriptBox[\(i\), \(0\)]\),\!\(\*SubscriptBox[\(j\), \(0\)]\)) and (\!\(\*SubscriptBox[\(i\), \(max\)]\),\!\(\*SubscriptBox[\(j\), \(max\)]\)).";
+KDroop1Q::usage="KDroop1Q[P,i0,j0,imax,jmax] tests whether it is possible to perform a k-theoretic droop move on the bumpless pipe dream P in the rectangle defined by the corners (\!\(\*SubscriptBox[\(i\), \(0\)]\),\!\(\*SubscriptBox[\(j\), \(0\)]\)) and (\!\(\*SubscriptBox[\(i\), \(max\)]\),\!\(\*SubscriptBox[\(j\), \(max\)]\)).";
+kDroop2::usage="kDroop2[P,i0,j0,imax,jmax] returns a bumpless pipe dream which differs from P by a k-theoretic droop move performed in the rectangle defined by the corners (\!\(\*SubscriptBox[\(i\), \(0\)]\),\!\(\*SubscriptBox[\(j\), \(0\)]\)) and (\!\(\*SubscriptBox[\(i\), \(max\)]\),\!\(\*SubscriptBox[\(j\), \(max\)]\)).";
+KDroop2Q::usage="KDroop2Q[P,i0,j0,imax,jmax] tests whether it is possible to perform a k-theoretic droop move on the bumpless pipe dream P in the rectangle defined by the corners (\!\(\*SubscriptBox[\(i\), \(0\)]\),\!\(\*SubscriptBox[\(j\), \(0\)]\)) and (\!\(\*SubscriptBox[\(i\), \(max\)]\),\!\(\*SubscriptBox[\(j\), \(max\)]\)).";
 BumplessPipeDreams::usage="BumplessPipeDreams[w] returns all bumpless pipe dreams (reduced and nonreduced) for the permutation w.";
 PivotQ::usage="PivotQ[P,a,b,i,j] determines whether the entry (i,j) is a pivot of (a,b) in the alternating sign matrix P.";
 RemovableNeg1Q::usage="RemovableNeg1Q[P,a,b] determines whether the entry (a,b) in the alternating sign matrix P is a removable -1.";
 BPDtoDemazureProduct::usage="BPDtoDemazureProduct[P] outputs the permutation correponding to the Demazure product of the column reading word of the bumpless pipe dream P.";
 MarkedBumplessPipeDreams::usage="MarkedBumplessPipeDreams[w] returns all marked bumpless pipe dreams for the permutation w.";
 DrawMarkedBumplessPipeDream::usage="DrawMarkedBumplessPipeDream[{P,s}] generates a visual representation of the input marked bumpless pipe dream.";
+RandomPartition::usage="RandomPartition[n] uniformly generates a random integer partition of size n.\nRandomPartition[n,m] uniformly generates a random integer partition of size n with exactly m parts.";
 
 Unprotect[
 Memoization,
@@ -158,11 +173,11 @@ IsobaricDividedDifference,
 LehmerCode,
 LehmerCodeToPermutation,
 OneFixedDominantQ,
-CoreRegion,
 RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
 AvoidsPattern,
+PermutationPatternIndices,
 GeneralizedPermutahedronZVector,
 GeneralizedPermutahedronInequalities,
 GeneralizedPermutahedronYVector,
@@ -175,7 +190,10 @@ VexillaryQ,
 DrawRotheDiagram,
 DemazureDifference,
 DemazureLascouxDifference,
+CompositionQ,
+MinimalComposition,
 KeyPolynomial,
+LascouxPolynomial,
 HomogeneousComponents,
 SymmetricPolynomialQ,
 RankMatrix,
@@ -185,9 +203,8 @@ XVariables,
 XBVariables,
 XYVariables,
 XYBVariables,
-BruhatOrderLessEqualCoverQ,
 SkylineDiagram,
-BalancedLabelings,
+(*BalancedLabelings,*)
 PartitionQ,
 SchurPolynomial,
 WiringDiagram,
@@ -224,10 +241,10 @@ FundamentalSlidePolynomial,
 Compositions,
 FundamentalSlideExpansion,
 MinimalPermutation,
+GrothendieckExpansion,
 KeyExpansion,
 SchubertExpansion,
 NorthWestDiagramMatrixQ,
-StronglySeparatedDiagramMatrixQ,
 SchubertPolynomialQ,
 PercentageAvoidingDiagramMatrixQ,
 SkewSchurPolynomial,
@@ -237,6 +254,8 @@ QuadraticFormToMatrix,
 LorentzianPolynomialQ,
 CheckNonnegativity,
 CheckMConvexity,
+PrintFailure,
+PrintReason,
 HeckeReduce,
 PolynomialDegree,
 RotheBPD,
@@ -244,6 +263,7 @@ ASMQ,
 DroopMove,
 DroopMoveQ,
 ReducedBumplessPipeDreams,
+FullBPDData,
 BPDtoPermutation,
 DrawBumplessPipeDream,
 PipeColor,
@@ -256,7 +276,8 @@ PivotQ,
 RemovableNeg1Q,
 BPDtoDemazureProduct,
 MarkedBumplessPipeDreams,
-DrawMarkedBumplessPipeDream
+DrawMarkedBumplessPipeDream,
+RandomPartition
 ];
 
 Unprotect[Global`x,Global`y,Global`b,Global`t];
@@ -297,8 +318,8 @@ PipeDreamToPermutation[P_?PipeDreamQ]:=Module[{info,crossings,i,j,n},
 n=Length[P];
 info=Table[{0,0},{n},{n}];
 crossings={};
-For[i=n,i>=1,i--,
-For[j=1,j<=n-i+1,j++,
+Do[
+Do[
 If[{i,j}=={n,1},info[[n,1]]={n,0}; ];
 If[i==n&&j>1,info[[i,j]]=0];
 If[j==1&&i<n&& P[[i,j]]==0,info[[i,j]]={i,info[[i+1,j]][[1]]};];
@@ -306,29 +327,10 @@ If[j==1&&i<n&& P[[i,j]]==1,info[[i,j]]={info[[i+1,j]][[1]],i}; AppendTo[crossing
 If[i<n&&j>1&&P[[i,j]]==0,info[[i,j]]={info[[i,j-1]][[2]],info[[i+1,j]][[1]]}];
 If[i<n&&j>1&&P[[i,j]]==1&&MemberQ[crossings,Sort[{info[[i,j-1]][[2]],info[[i+1,j]][[1]]}]],info[[i,j]]={info[[i,j-1]][[2]],info[[i+1,j]][[1]]}];
 If[i<n&&j>1&&P[[i,j]]==1&&!MemberQ[crossings,Sort[{info[[i,j-1]][[2]],info[[i+1,j]][[1]]}]],info[[i,j]]={info[[i+1,j]][[1]],info[[i,j-1]][[2]]}; AppendTo[crossings,Sort[info[[i,j]]]]]
-];
-];
+,{j,1,n-i+1}];
+,{i,Reverse[Range[n]]}];
 Return[InversePermutation[info[[1,All,1]]]];
 ];
-
-(*
-PipeDreams[w_?PermutationListQ]:=Module[{changeoneelbow,redpipes,newpipedreams,allpipes},
-changeoneelbow[P_]:=Module[{elbows,Q},
-elbows=Select[Position[P,0],Total[#]<=Length[P]&];
-Return[Table[Q=P;Q[[elb[[1]],elb[[2]]]]=1;Q,{elb,elbows}]];
-];
-redpipes=ReducedPipeDreams[w];
-newpipedreams=Flatten[changeoneelbow/@redpipes,1];
-newpipedreams=Select[newpipedreams,PipeDreamToPermutation[#]==w&];
-allpipes=DeleteDuplicates[Join[redpipes,newpipedreams]];
-While[Length[newpipedreams]>0,
-newpipedreams=Flatten[changeoneelbow/@newpipedreams,1];
-newpipedreams=Select[newpipedreams,PipeDreamToPermutation[#]==w&];
-allpipes=DeleteDuplicates[Join[allpipes,newpipedreams]];
-];
-Return[Sort[allpipes]];
-];
-*)
 
 PipeDreams[w_?PermutationListQ]:=Module[{w0,P0,word,pd,v},
 w0=Reverse[Range[Max[w]]];
@@ -343,7 +345,7 @@ pd=DeleteCases[pd,{}];
 pd=Flatten[Select[pd,MinimalPermutation[PipeDreamToPermutation[#[[1]]]]==v&],1];
 ,{i,word}];
 Return[pd];
-]
+];
 
 Options[DrawPipeDream]={CrossColor->Purple,ElbowColor->Purple,Labels->True};
 DrawPipeDream[P_?PipeDreamQ,OptionsPattern[]]:=Module[{vertgridlines,horizgridlines,Pcrosspositions,changeofcoordinates,Crossing,crosses,Pelbowpositions,normalelbowpositions,boundaryelbowposition,NormalElbow,normalelbows,BoundaryElbow,boundaryelbows,elbows,upperlabels,perm,leftlabels,picture},
@@ -379,10 +381,7 @@ Return[picture];
 
 Inversions[w_?PermutationListQ]:=Return[Select[Tuples[Range[Length[w]],{2}],#[[1]]<#[[2]]&&w[[#[[1]]]]>w[[#[[2]]]]&]];
 
-NumberInversions[w_?PermutationListQ]:=Module[{pairs},
-pairs=Select[Tuples[Range[Length[w]],{2}],#[[1]]<#[[2]]&];
-Return[Length[Select[pairs,w[[#[[1]]]]>w[[#[[2]]]]&]]];
-];
+NumberInversions[w_?PermutationListQ]:=Length@Inversions[w];
 
 ReducedPipeDreamQ[P_?PipeDreamQ]:=Return[Length[Position[P,1]]==NumberInversions[PipeDreamToPermutation[P]]]
 
@@ -443,9 +442,7 @@ isobaricDividedDifferenceBeta[i_Integer?Positive,f_]:=Return[Expand[DividedDiffe
 w0=Reverse[Range[Length[w]]];
 u=PermutationProduct[w0,InversePermutation[w]];word=ReducedWord[u];
 g=Apply[Times,Array[x[#]^(Length[w]-#)&,Length[w]-1]];
-For[i=1,i<=Length[word],i++,g=isobaricDividedDifferenceBeta[word[[i]],g];
-];
-Return[Expand[g]];
+Return[Expand[Fold[isobaricDividedDifferenceBeta[#2,#]&,g,word]]];
 ];
 
 BetaDoubleGrothendieckPolynomial[w_?PermutationListQ]:=Module[{isobaricDividedDifferenceBeta,w0,u,word,g,i},
@@ -454,10 +451,7 @@ w0=Reverse[Range[Length[w]]];
 u=PermutationProduct[w0,InversePermutation[w]];
 word=ReducedWord[u];
 g=Apply[Times,(x[#[[1]]]+y[#[[2]]]-x[#[[1]]]y[#[[2]]])&/@Select[Tuples[Range[Length[w]-1],{2}],#[[1]]+#[[2]]<=Length[w]&]];
-For[i=1,i<=Length[word],i++,
-g=isobaricDividedDifferenceBeta[word[[i]],g];
-];
-Return[Expand[g]];
+Return[Expand[Fold[isobaricDividedDifferenceBeta[#2,#]&,g,word]]];
 ];
 
 LehmerCode[w_?PermutationListQ]:=Return[Table[Count[w[[#]]<w[[i]]&/@Range[i+1,Length[w]],True],{i,1,Length[w]}]];
@@ -466,27 +460,22 @@ LehmerCodeToPermutation[list_?CompositionQ]:=Module[{k,begin,l,i,j},
 k=list;
 Label[begin];
 l=k;
-For[i=Length[l]-1,i>=1,i--,
-For[j=i+1,j<=Length[l],j++,
-If[l[[j]]>=l[[i]], l[[j]]=l[[j]]+1;];
-];
-];
+Do[
+Do[
+If[l[[j]]>=l[[i]],l[[j]]=l[[j]]+1;];
+,{j,i+1,Length[l]}];
+,{i,Length[l]-1,1,-1}];
 If[PermutationListQ[l+1],Return[l+1]];
 AppendTo[k,0];
 Goto[begin];
 ];
 
 OneFixedDominantQ[w_?PermutationListQ]:=Module[{code,decreasing},
-If[w[[1]]!=1, Return[False]];
+If[w[[1]]!=1,Return[False]];
 code=LehmerCode[w];
 decreasing=Table[code[[i]]>=code[[i+1]],{i,2,Length[code]-1}];
 If[DeleteDuplicates[decreasing]!={True},Return[False]];
 Return[True];
-];
-
-CoreRegion[w_?PermutationListQ]:=Module[{pipes},
-pipes=PipeDreams[w];
-Return[DeleteDuplicates[Flatten[Table[Position[P,1],{P,pipes}],1]]];
 ];
 
 RotheDiagram[w_?PermutationListQ]:=Module[{allSquares},
@@ -498,11 +487,7 @@ BottomReducedPipeDream[w_?PermutationListQ]:=Module[{rothe,perRow,P,i,j},
 rothe=RotheDiagram[w];
 perRow=Table[Length[Select[rothe,#[[1]]==j&]],{j,1,Length[w]}];
 P=Table[0,{Length[w]},{Length[w]}];
-For[j=1,j<=Length[perRow],j++,
-For[i=1,i<=perRow[[j]],i++,
-P[[j,i]]=1;
-];
-];
+Scan[(P[[Sequence@@#]]=1)&,Table[{j,i},{j,1,Length[perRow]},{i,1,perRow[[j]]}],{2}];
 Return[P];
 ];
 
@@ -510,25 +495,27 @@ TopReducedPipeDream[w_?PermutationListQ]:=Module[{rothe,perColumn,P,i,j},
 rothe=RotheDiagram[w];
 perColumn=Table[Length[Select[rothe,#[[2]]==j&]],{j,1,Length[w]}];
 P=Table[0,{Length[w]},{Length[w]}];
-For[j=1,j<=Length[perColumn],j++,
-For[i=1,i<=perColumn[[j]],i++,
-P[[i,j]]=1;
-];
-];
+Scan[(P[[Sequence@@#]]=1)&,Table[{i,j},{j,1,Length[perColumn]},{i,1,perColumn[[j]]}],{2}];
 Return[P];
 ];
 
-AvoidsPattern[sigma_?PermutationListQ,tau_?PermutationListQ]:=Module[{n,k,possibles,indices,pairs,list1,list2,ind,results},
-n=Length[sigma];
-k=Length[tau];
-possibles=Subsets[Range[n],{k}];
-indices=Tuples[Range[k],2];
-pairs=Tuples[Range[k],{2}];
-results=Table[
-list1=Select[pairs,sigma[[current[[#[[1]]]]]]<sigma[[current[[#[[2]]]]]]&];
-list2=Select[pairs,tau[[#[[1]]]]<tau[[#[[2]]]]&];
-Sort[list1]==Sort[list2],{current,possibles}];
-If[MemberQ[results,True],Return[False],Return[True]];
+AvoidsPattern[w_?PermutationListQ,\[Sigma]_?PermutationListQ]:=Module[{n,m,subpermutations,patterns,indices},
+n=Length[w];
+m=Length[\[Sigma]];
+If[m>n,Return[True]];
+subpermutations=w[[#]]&/@Subsets[Range[n],{m}];
+patterns=Table[p/.Thread[Sort[p]->Range[Length[p]]],{p,subpermutations}];
+Return[!MemberQ[patterns,\[Sigma]]];
+];
+
+PermutationPatternIndices[w_?PermutationListQ,\[Sigma]_?PermutationListQ]:=Module[{n,m,subsets,subpermutations,patterns,indices},
+n=Length[w];
+m=Length[\[Sigma]];
+If[m>n,Return[{}]];
+subsets=Subsets[Range[n],{m}];
+subpermutations=w[[#]]&/@subsets;
+patterns=Table[p/.Thread[Sort[p]->Range[Length[p]]],{p,subpermutations}];
+Return[subsets[[Flatten[Position[patterns,\[Sigma]]]]]];
 ];
 
 (*
@@ -657,15 +644,67 @@ CompositionQ[alpha_]:=Module[{},
 Return[VectorQ[alpha,IntegerQ[#]&&#>=0&]];
 ];
 
-KeyPolynomial[alpha_?CompositionQ]:=Module[{beta,descent,betahat},
+MinimalComposition[alpha_?CompositionQ]:=Module[{beta},
+If[Length@alpha==1,Return[alpha]];
+beta=alpha;
+While[Length[beta]>1&&beta[[-1]]==0,
+beta=beta[[;;-2]];
+];
+Return[beta];
+];
+
+Options[KeyPolynomial]={Memoization->True};
+KeyPolynomial[alpha_?CompositionQ,OptionsPattern[]]:=KeyPolynomial[MinimalComposition[alpha],OptionValue[Memoization]];
+
+KeyPolynomial[alpha_,True]:=MemoizedKeyPolynomial[MinimalComposition@alpha];
+
+MemoizedKeyPolynomial[alpha_]:=MemoizedKeyPolynomial[alpha]=Module[{beta,descent,betahat},
 beta=alpha;
 While[Length[beta]<Max[beta],AppendTo[beta,0];];
-If[Sort[beta,#1>#2&]==beta, Return[Apply[Times,Table[x[i],{i,1,Length[beta]}]^beta]]];
+If[Sort[beta,#1>#2&]==beta,Return[Apply[Times,Table[x[i],{i,1,Length[beta]}]^beta]]];
 descent=Select[Range[Length[beta]-1],beta[[#+1]]>beta[[#]]&][[1]];
 betahat=beta;
 betahat[[descent]]=beta[[descent+1]];
 betahat[[descent+1]]=beta[[descent]];
-Return[DemazureDifference[descent,KeyPolynomial[betahat]]];
+Return[DemazureDifference[descent,MemoizedKeyPolynomial[MinimalComposition@betahat]]];
+];
+
+KeyPolynomial[alpha_,False]:=Module[{beta,descent,betahat},
+beta=alpha;
+While[Length[beta]<Max[beta],AppendTo[beta,0];];
+If[Sort[beta,#1>#2&]==beta,Return[Apply[Times,Table[x[i],{i,1,Length[beta]}]^beta]]];
+descent=Select[Range[Length[beta]-1],beta[[#+1]]>beta[[#]]&][[1]];
+betahat=beta;
+betahat[[descent]]=beta[[descent+1]];
+betahat[[descent+1]]=beta[[descent]];
+Return[DemazureDifference[descent,KeyPolynomial[betahat,False]]];
+];
+
+Options[LascouxPolynomial]={Memoization->True};
+LascouxPolynomial[alpha_?CompositionQ,OptionsPattern[]]:=LascouxPolynomial[MinimalComposition[alpha],OptionValue[Memoization]];
+
+LascouxPolynomial[alpha_,True]:=MemoizedLascouxPolynomial[MinimalComposition@alpha];
+
+MemoizedLascouxPolynomial[alpha_]:=MemoizedLascouxPolynomial[alpha]=Module[{beta,descent,betahat},
+beta=alpha;
+While[Length[beta]<Max[beta],AppendTo[beta,0];];
+If[Sort[beta,#1>#2&]==beta,Return[Apply[Times,Table[x[i],{i,1,Length[beta]}]^beta]]];
+descent=Select[Range[Length[beta]-1],beta[[#+1]]>beta[[#]]&][[1]];
+betahat=beta;
+betahat[[descent]]=beta[[descent+1]];
+betahat[[descent+1]]=beta[[descent]];
+Return[DemazureLascouxDifference[descent,MemoizedLascouxPolynomial[MinimalComposition@betahat]]];
+];
+
+LascouxPolynomial[alpha_,False]:=Module[{beta,descent,betahat},
+beta=alpha;
+While[Length[beta]<Max[beta],AppendTo[beta,0];];
+If[Sort[beta,#1>#2&]==beta,Return[Apply[Times,Table[x[i],{i,1,Length[beta]}]^beta]]];
+descent=Select[Range[Length[beta]-1],beta[[#+1]]>beta[[#]]&][[1]];
+betahat=beta;
+betahat[[descent]]=beta[[descent+1]];
+betahat[[descent+1]]=beta[[descent]];
+Return[DemazureLascouxDifference[descent,LascouxPolynomial[betahat,False]]];
 ];
 
 HomogeneousComponents[poly_,variables_?VectorQ]:=Module[{split,mults},
@@ -709,16 +748,23 @@ w1=w;
 Return[AllTrue[Thread[Flatten[RankMatrix[v1]]<=Flatten[RankMatrix[w1]]],#&]];
 ];
 
+UpperStrongBruhatCovers[w_?PermutationListQ]:=Module[{n,trans,covers},
+n=Length@w;
+trans=Flatten[Table[Transposition@@{i,j},{i,1,n-1},{j,i+1,n}],1];
+covers=Select[PermutationProduct[#,w]&/@trans,NumberInversions[#]==NumberInversions[w]+1&];
+Return[covers];
+];
+
 MultiplicityPolynomials[poly_,vars_?VectorQ]:=Module[{exps,coeffs,numbershifts,shifts,shiftedcoeffs,i},
 exps=Exponents[poly,vars];
 coeffs=Coefficients[poly,vars];
 numbershifts=Max[Abs/@coeffs];
 shifts={Total[Table[coeffs[[i]]Apply[Times,vars^(exps[[i]])],{i,1,Length[exps]}]]};
 shiftedcoeffs=coeffs;
-For[i=1,i<numbershifts,i++,
+Do[
 shiftedcoeffs=shiftedcoeffs-Table[Piecewise[{{1,i>0},{-1,i<0},{0,i==0}}],{i,shiftedcoeffs}];
 AppendTo[shifts,Total[Table[shiftedcoeffs[[i]]Apply[Times,vars^(exps[[i]])],{i,1,Length[exps]}]]];
-];
+,{i,1,numbershifts-1}];
 Return[shifts];
 ];
 MultiplicityPolynomials[poly_]:=MultiplicityPolynomials[poly,Variables[poly]];
@@ -739,6 +785,7 @@ XYBVariables[w_?PermutationListQ]:=Return[Append[Join[Array[x,Length[w]-1],Array
 
 XYBVariables[n_Integer?Positive]:=Return[Append[Join[Array[x,n],Array[y,n]],b]];
 
+(*(*Does not work. Incorrect idea from stackexchange post*)
 BruhatOrderLessEqualCoverQ[w1_?PermutationListQ,v1_?PermutationListQ]:=Module[{v,w,n,diff,e,f},
 n=Max[Join[v1,w1]];
 w=Join[w1,Range[Max[w1]+1,n]];
@@ -749,9 +796,12 @@ e=Min[diff];
 f=Max[diff];
 Return[w[[e]]<w[[f]]&&Length[Select[Range[e+1,f-1],w[[e]]<w[[#]]<w[[f]]&]]==0];
 ];
+*)
 
 SkylineDiagram[alpha_?VectorQ]:=Flatten[DeleteCases[Table[Table[{j,i},{i,1,alpha[[j]]}],{j,1,Length[alpha]}],{}],1];
 
+(*Needs work in light of new code for super balanced labelings*)
+(*
 BalancedLabelings[diagram_?BoxListQ,n_Integer?Positive]:=Module[{hook,allhooks,balancedQ,fillingbalancedQ,variables,flagconditions,columns,strictcolumns,unbalancedfillings,balancedlabelings,A,matrices},
 hook[square_]:=Select[diagram,#[[1]]==(square[[1]]&&#[[2]]>=square[[2]])||#[[2]]==square[[2]]&&#[[1]]>=square[[1]]&];
 allhooks=hook/@diagram;
@@ -782,7 +832,7 @@ A[[diagram[[i]][[1]],diagram[[i]][[2]]]]=bl[[i]];
 AppendTo[matrices,A];
 ,{bl,balancedlabelings}];
 Return[matrices];
-];
+];*)
 
 PartitionQ[lambda_]:=Module[{},
 Return[VectorQ[lambda,IntegerQ[#]&&(Positive[#]||#==0)&]&&SortBy[lambda,-#&]==lambda];
@@ -832,9 +882,10 @@ Return[Graphics[Join[lines,leftlabels,rightlabels],PlotRange->{{-1,Length[word]+
 ];
 WiringDiagram[inputword_?WordQ]:=WiringDiagram[inputword,Max[inputword]+1];
 
-Schubitope[w_?PermutationListQ]:=Module[{diagram,size,allSquares,word,phi,theta},
+Options[Schubitope]={SmallestBoundingBox->False};
+Schubitope[w_?PermutationListQ,OptionsPattern[]]:=Module[{diagram,size,allSquares,word,phi,theta},
 diagram=RotheDiagram[w];
-size=Max[w];
+size=If[OptionValue[SmallestBoundingBox],Max[diagram[[All,1]]],Max@w];
 allSquares=Tuples[Range[size],{2}];
 word[c_,S_]:=DeleteCases[Table[If[!MemberQ[diagram,square]&&MemberQ[S,square[[1]]],"(",If[MemberQ[diagram,square]&&!MemberQ[S,square[[1]]],")",If[MemberQ[diagram,square]&&MemberQ[S,square[[1]]],"*"]]],{square,Select[allSquares,#[[2]]==c&]}],Null];
 phi[c_,S_]:=Module[{count,wordcS,parentheses,occurences,stars},
@@ -851,7 +902,7 @@ stars=Length[StringCases[Apply[StringJoin,wordcS],"*"]];
 Return[count+stars];
 ];
 theta[S_]:=Sum[phi[c,S],{c,1,size}];
-Return[theta];
+Return[Association@@Table[S->theta[S],{S,Subsets[Range@size]}]];
 ];
 
 SchubitopeDimension[w_?PermutationListQ]:=Module[{diagram,columns,columnindices,interval,intervals,intersectingpairs,joined},
@@ -870,12 +921,14 @@ intersectingpairs=Select[Tuples[Range[Length[intervals]],{2}],DeleteDuplicates[S
 Return[Sum[Length[int]-1,{int,intervals}]];
 ];
 
-ToZeroOneMatrix[diagram_?BoxListQ,{m_,n_}]:=Module[{A},
+ToZeroOneMatrix[{}]:={{0}};
+ToZeroOneMatrix[diagram_?BoxListQ,{m_Integer,n_Integer}]:=Module[{A},
 A=ConstantArray[0,{m,n}];
 Do[A[[sq[[1]],sq[[2]]]]=1,{sq,diagram}];
 Return[A];
 ];
-ToZeroOneMatrix[diagram_?ListQ,{n_}]:=ToZeroOneMatrix[diagram,{n,n}];
+ToZeroOneMatrix[diagram_?BoxListQ,{n_Integer}]:=ToZeroOneMatrix[diagram,{n,n}];
+ToZeroOneMatrix[diagram_?BoxListQ]:=ToZeroOneMatrix[diagram,Max/@Transpose@diagram];
 
 DiagramMatrixQ[D_?MatrixQ]:=Module[{integer},
 integer=MatrixQ[D,IntegerQ[#]&];
@@ -935,6 +988,7 @@ crosses=Flatten[drawcross/@Position[kdiagram,2],1];
 drawing=Graphics[Join[squares,crosses,horizgridlines,vertgridlines]]
 ];
 
+(*
 GhostKohnertMoveResults[diagram_?DiagramMatrixQ]:=Module[{m,n,squares,deadsquares,maxcolindices,rightmostsquares,newdiagrams,relevantcolumn,zeros,exchangepos,newdiagram},
 m=Length[diagram];
 n=Length[diagram[[1]]];
@@ -982,6 +1036,7 @@ vars=Array[x,m];
 weights=GhostKohnertWeight/@GhostKohnertDiagrams[diagram];
 Return[Total[Apply[Times,vars^#&/@weights,1]]];
 ];
+*)
 
 DrawDiagram[diagram_?BoxListQ,{m_,n_}]:=
 Module[{vertgridlines,horizgridlines,squares,drawing},
@@ -1174,17 +1229,17 @@ variables=Table[x[i],{i,Range[n]}];
 Return[Total[Table[Times@@sld,{sld,Table[variables^exp,{exp,sumover}]}]]];
 ];
 
-FundamentalSlideExpansion[w_?PermutationListQ]:=Module[{sw,poly,comps,exp},
-sw=SchubertPolynomial[w];
-If[sw==1,Return[{{0}}]];
-poly=sw;
+FundamentalSlideExpansion[origpoly_]:=Module[{poly,comps,exp,assoc},
+If[NumberQ[origpoly]&&origpoly==1,Return[Association[{0}->0]]];
+poly=origpoly;
 comps={};
-While[Exponents[poly,XVariables[w]]!={},
-exp=Sort[Exponents[poly,XVariables[w]]][[1]];
+While[Exponents[poly]!={},
+exp=Sort[Exponents[poly]][[1]];
 poly=poly-FundamentalSlidePolynomial[exp];
 AppendTo[comps,exp];
 ];
-Return[comps];
+assoc=Association@@(#[[1]]->#[[2]]&/@Tally[comps]);
+Return[assoc];
 ];
 
 MinimalPermutation[w_?PermutationListQ]:=Module[{max},
@@ -1193,14 +1248,16 @@ If[max==-\[Infinity],Return[{1}]];
 Return[w[[1;;max]]];
 ];
 
+(*See FasterSchubertDirect.nb for faster Key Polynomial and single large Schubert computations*)
+ 
 Options[SchubertPolynomial]={Memoization->True};
 SchubertPolynomial[w_?PermutationListQ,OptionsPattern[]]:=SchubertPolynomial[w,OptionValue[Memoization]];
-SchubertPolynomial[w_,False]:=Module[{w0,u,word,g,i},w0=Reverse[Range[Length[w]]];
+SchubertPolynomial[w_,False]:=Module[{w0,u,word,g},
+w0=Reverse[Range[Length[w]]];
 u=PermutationProduct[w0,InversePermutation[w]];
 word=ReducedWord[u];
 g=Apply[Times,Array[x[#]^(Length[w]-#)&,Length[w]-1]];
-For[i=1,i<=Length[word],i++,g=DividedDifference[word[[i]],g];];
-Return[Expand[g]];
+Return[Expand[Fold[DividedDifference[#2,#]&,g,word]]];
 ];
 SchubertPolynomial[w_,True]:=MemoizedSchubertPolynomial[MinimalPermutation[w]];
 
@@ -1232,10 +1289,7 @@ w0=Reverse[Range[Length[w]]];
 u=PermutationProduct[w0,InversePermutation[w]];
 word=ReducedWord[u];
 g=Apply[Times,Array[x[#]^(Length[w]-#)&,Length[w]-1]];
-For[i=1,i<=Length[word],i++,
-g=IsobaricDividedDifference[word[[i]],g];
-];
-Return[Expand[g]];
+Return[Expand[Fold[IsobaricDividedDifference[#2,#]&,g,word]]];
 ];
 GrothendieckPolynomial[w_,True]:=MemoizedGrothendieckPolynomial[MinimalPermutation[w]];
 
@@ -1257,10 +1311,7 @@ w0=Reverse[Range[Length[w]]];
 u=PermutationProduct[w0,InversePermutation[w]];
 word=ReducedWord[u];
 g=Apply[Times,(x[#[[1]]]+y[#[[2]]]-x[#[[1]]]y[#[[2]]])&/@Select[Tuples[Range[Length[w]-1],{2}],#[[1]]+#[[2]]<=Length[w]&]];
-For[i=1,i<=Length[word],i++,
-g=IsobaricDividedDifference[word[[i]],g];
-];
-Return[Expand[g]];
+Return[Expand[Fold[IsobaricDividedDifference[#2,#]&,g,word]]]
 ];
 DoubleGrothendieckPolynomial[w_,True]:=MemoizedDoubleGrothendieckPolynomial[MinimalPermutation[w]];
 
@@ -1275,38 +1326,6 @@ transition=Total[f/@Subsets[tterms]];
 Return[Expand[MemoizedDoubleGrothendieckPolynomial[MinimalPermutation[v]]+(1-x[r])(-1+y[v[[r]]])transition]];
 ];
 
-(*
-SchubertExpansion::failure="Output expansion equality check FAIL.";
-Options[SchubertExpansion]={Memoization->True};
-SchubertExpansion[poly_?IntegerQ,OptionsPattern[]]:=Return[{{Range[2]},{poly}}];
-SchubertExpansion[poly_?IntegerQ,oldvars_?ListQ,OptionsPattern[]]:=Return[{Range[Max[1,Length[oldvars]]],{poly}}];
-SchubertExpansion[poly_,OptionsPattern[]]:=SchubertExpansion[Expand[poly],Sort[Variables[Expand[poly]]],Memoization->OptionValue[Memoization]];
-SchubertExpansion[oldpoly_,oldvars_?ListQ,OptionsPattern[]]:=Module[{poly,p,vars,exps,code,coeffs,codecoeff,perms,expcoeffs,w,sanitycheck},
-poly=Expand[oldpoly];
-If[poly==0,Return[{{},{}}]];
-perms={};
-expcoeffs={};
-p=Expand[poly/.Table[oldvars[[i]]->x[i],{i,1,Length[oldvars]}]];
-vars=Array[x,Length[vars]];
-exps=Exponents[p,vars];
-While[Length[exps]>0,
-If[p==0,Break[]];
-code=Sort[exps][[1]];
-coeffs=Coefficients[p,vars];
-codecoeff=coeffs[[Position[exps,code][[1,1]]]];
-w=LehmerCodeToPermutation[code];
-AppendTo[perms,w];
-AppendTo[expcoeffs,codecoeff];
-p=Expand[p-codecoeff*SchubertPolynomial[w,OptionValue[Memoization]]];
-exps=Exponents[p,vars];
-];
-sanitycheck=Expand[(SchubertPolynomial/@perms).expcoeffs-poly];
-If[NumberQ[sanitycheck]&&sanitycheck==0,
-Return[{perms,expcoeffs}],Message[SchubertExpansion::failure];
-];
-];
-*)
-
 SchubertExpansion::failure="Output expansion equality check FAIL.";
 Options[SchubertExpansion]={Memoization->True};
 SchubertExpansion[poly_?IntegerQ,OptionsPattern[]]:=Return[{{Range[3]},{poly}}];
@@ -1318,7 +1337,7 @@ Return[SchubertExpansion[Expand[poly],Array[x,n],Memoization->OptionValue[Memoiz
 ];
 SchubertExpansion[oldpoly_,xvars_?ListQ,OptionsPattern[]]:=Module[{poly,p,exps,code,coeffs,codecoeff,perms,expcoeffs,w,n,paddedperms,sanitycheck},
 poly=Expand[oldpoly];
-If[poly==0, 
+If[poly==0,
 Return[{{},{}}];
 ];
 perms={};
@@ -1337,25 +1356,68 @@ p=Expand[p-codecoeff*SchubertPolynomial[w,OptionValue[Memoization]]];
 exps=Exponents[p,xvars];
 ];
 n=Max[Length/@perms];
-paddedperms=Join[#,Complement[Range[n],#]]&/@perms;
-sanitycheck=Expand[(SchubertPolynomial/@paddedperms).expcoeffs-poly];
+(*paddedperms=Join[#,Complement[Range[n],#]]&/@perms;*)
+paddedperms=perms;
+sanitycheck=Expand[(SchubertPolynomial/@paddedperms) . expcoeffs-poly];
 If[NumberQ[sanitycheck]&&sanitycheck==0,
-Return[{paddedperms,expcoeffs}],
+Return[Association@@Thread[paddedperms->expcoeffs]],
 Message[SchubertExpansion::failure]
 ];
 ];
 
-KeyExpansion[w_?PermutationListQ]:=Module[{sw,poly,comps,exp},
-sw=SchubertPolynomial[w];
-If[sw==1,Return[{{0}}]];
-poly=sw;
-comps={};
-While[Exponents[poly,XVariables[w]]!={},
-exp=Sort[Exponents[poly,XVariables[w]]][[1]];
-poly=poly-KeyPolynomial[exp];
-AppendTo[comps,exp];
+GrothendieckExpansion::failure="Output expansion equality check FAIL.";
+Options[GrothendieckExpansion]={Memoization->True};
+GrothendieckExpansion[poly_?IntegerQ,OptionsPattern[]]:=Return[{{Range[3]},{poly}}];
+GrothendieckExpansion[poly_?IntegerQ,xvars_?ListQ,OptionsPattern[]]:=Return[{Range[Max[1,Length[xvars]]],{poly}}];
+GrothendieckExpansion[poly_,OptionsPattern[]]:=Module[{vars,n},
+vars=Variables[poly];
+n=Max[Cases[vars,x[_]]/.x[a_]:>a];
+Return[GrothendieckExpansion[Expand[poly],Array[x,n],Memoization->OptionValue[Memoization]]];
 ];
-Return[comps];
+GrothendieckExpansion[oldpoly_,xvars_?ListQ,OptionsPattern[]]:=Module[{poly,p,exps,gather,degs,mindeg,bottomexps,code,coeffs,codecoeff,perms,expcoeffs,w,n,paddedperms,sanitycheck},
+poly=Expand[oldpoly];
+If[poly==0,Return[{{},{}}];];
+perms={};
+expcoeffs={};
+p=poly;
+exps=Exponents[p,xvars];
+While[Length[exps]>0,
+If[p==0,Break[]];
+gather=GatherBy[exps,Total];
+degs=Total/@gather[[All,1]];
+mindeg=Min[degs];
+bottomexps=gather[[Flatten[Position[degs,mindeg]][[1]]]];
+code=Sort[bottomexps][[1]];
+coeffs=Coefficients[p,xvars];
+codecoeff=coeffs[[Position[exps,code][[1,1]]]];
+w=LehmerCodeToPermutation[code];
+AppendTo[perms,w];
+AppendTo[expcoeffs,codecoeff];
+p=Expand[p-codecoeff*GrothendieckPolynomial[w,OptionValue[Memoization]]];
+exps=Exponents[p,xvars];
+];
+n=Max[Length/@perms];
+paddedperms=Join[#,Complement[Range[n],#]]&/@perms;
+sanitycheck=Expand[(GrothendieckPolynomial/@paddedperms) . expcoeffs-poly];
+If[NumberQ[sanitycheck]&&sanitycheck==0,Return[{paddedperms,expcoeffs}],Message[GrothendieckExpansion::failure]];
+];
+
+KeyExpansion[poly_]:=Module[{assoc,n,f,exps,exp,coeff},
+assoc=Association[];
+n=Length@Variables[poly];
+If[NumberQ@poly,
+assoc[{0}]=poly;
+Return[assoc]];
+f=poly;
+exps=Exponents[f,Array[x,n]];
+While[exps!={},
+exp=Sort[exps][[1]];
+coeff=Coefficients[f][[Position[exps,exp][[1,1]]]];
+f=f-coeff*KeyPolynomial[exp];
+assoc[exp]=coeff;
+exps=Exponents[f,Array[x,n]];
+];
+Return[KeyMap[MinimalComposition,assoc]];
 ];
 
 NorthWestDiagramMatrixQ[matrix_]:=Module[{ones,pairs,goodpairs},
@@ -1364,20 +1426,6 @@ ones=Position[matrix,1];
 pairs=Tuples[ones,{2}];
 goodpairs=Select[pairs,#[[1,1]]<#[[2,1]]&&#[[1,2]]>#[[2,2]]&];
 Return[AllTrue[goodpairs,MemberQ[ones,{#[[1,1]],#[[2,2]]}]&]];
-];
-
-StronglySeparatedDiagramMatrixQ[M_]:=Module[{DD,pairs,TestPair},
-If[AnyTrue[Flatten[M],#!=0&&#!=1&],Return[False]];
-DD=Flatten[Position[#,1]]&/@Transpose[M];
-pairs=Subsets[DD,{2}];
-TestPair[pair_]:=Module[{int,comp1,comp2},
-int=Intersection[pair[[1]],pair[[2]]];
-comp1=Complement[pair[[1]],int];
-comp2=Complement[pair[[2]],int];
-If[comp1=={}||comp2=={},Return[True]];
-Return[Max[comp1]<Min[comp2]||Max[comp2]<Min[comp1]];
-];
-Return[AllTrue[pairs,TestPair]];
 ];
 
 Options[SchubertPolynomialQ]={Memoization->True};
@@ -1426,6 +1474,7 @@ Return[MConvexSetQ[exps]];
 ];
 
 NormalizePolynomial[poly_]:=Module[{vars,monomials,exps,normalizers},
+If[NumberQ[poly]&&poly==0,Return[0]];
 vars=Variables[poly];
 monomials=MonomialList[poly];
 exps=Flatten[Exponents[#,vars]&/@monomials,1];
@@ -1442,7 +1491,7 @@ Do[A[[s[[1]],s[[2]]]]=A[[s[[2]],s[[1]]]];,{s,Reverse/@Subsets[Range[n],{2}]}];
 Return[A];
 ];
 
-Options[LorentzianPolynomialQ]={CheckNonnegativity->True,CheckMConvexity->True};
+Options[LorentzianPolynomialQ]={CheckNonnegativity->True,CheckMConvexity->True,PrintFailure->False,PrintReason->False};
 LorentzianPolynomialQ[h_,OptionsPattern[]]:=Module[{oldvars,n,vars,f,degrees,homogeneous,coeffs,nonnegativecoeffs,d,g,A,mconvexsupport,increasingTuples,tuples,eigenvalues,spectral},
 If[IntegerQ[h],Return[h>=0]];
 oldvars=Variables[h];
@@ -1451,15 +1500,24 @@ vars=Array[x,n];
 f=h/.Thread[oldvars->vars];
 degrees=Total/@Exponents[f,vars];
 homogeneous=(Length[DeleteDuplicates[degrees]]==1);
-If[!homogeneous,Return[False]];
+If[!homogeneous,
+If[OptionValue@PrintReason,Print["Homogeneity"]];
+Return[False];
+];
 coeffs=Coefficients[f,vars];
 If[OptionValue[CheckNonnegativity],
 nonnegativecoeffs=(DeleteDuplicates[NumberQ[#]&&#>=0&/@coeffs]=={True});
-If[!nonnegativecoeffs,Return[False]];
+If[!nonnegativecoeffs,
+If[OptionValue@PrintReason,Print["Nonnegativity"]];
+Return[False];
+];
 ];
 If[OptionValue[CheckMConvexity],
 mconvexsupport=MConvexSupportQ[f];
-If[!mconvexsupport,Return[False]];
+If[!mconvexsupport,
+If[OptionValue@PrintReason,Print["M-Convexity"]];
+Return[False];
+];
 ];
 d=degrees[[1]];
 If[d==1,Return[True]];
@@ -1479,7 +1537,11 @@ g=D[g,x[i]];
 A=QuadraticFormToMatrix[g,n];
 eigenvalues=Eigenvalues[A]//N;
 spectral=(Length[Select[eigenvalues,Positive[#]&]]<=1);
-If[!spectral,Break[]];
+If[!spectral,
+If[OptionValue@PrintReason,Print["Spectral"]];
+If[OptionValue[PrintFailure],Print[t]];
+Break[];
+];
 ,{t,tuples}];
 Return[spectral];
 ];
@@ -1540,192 +1602,131 @@ degree=Max[Total/@exps];
 Return[degree];
 ];
 
-RotheBPD[w_?PermutationListQ]:=Module[{P,j},
+RotheBPD[w_?PermutationListQ]:=Module[{P},
 P=Table[0,{Length[w]},{Length[w]}];
-For[j=1,j<=Length[w],j++,
-P[[j,w[[j]]]]=1;
-];
+Scan[(P[[#,w[[#]]]]=1)&,Sort[w]];
 Return[P];
 ];
 
-ASMQ[P_?MatrixQ]:=Module[{i,j, sum, Valid},
-Valid=True;
-For[i=1,i<=Length[P],i++,
-For[j=1,j<=Length[P],j++,
-Valid=If[P[[i,j]]!=0 && P[[i,j]]!=1&&P[[i,j]]!=-1, False, Valid];
-];
-];
-For[i=1,i<=Length[P],i++,
-sum=0;
-For[j=1,j<=Length[P],j++,
-sum=sum+P[[i,j]];
-Valid=If[sum!=0 && sum!=1, False, Valid];
-];
-];
-For[j=1,j<=Length[P],j++,
-sum=0;
-For[i=1,i<=Length[P],i++,
-sum=sum+P[[i,j]];
-Valid=If[sum!=0 && sum!=1, False, Valid];
-];
-];
-Return[Valid];
+ASMQ[P_]:=Module[{signedmatrix,rowsums,colsums},
+signedmatrix=MatrixQ[P,MemberQ[{-1,0,1},#]&];
+rowsums=AllTrue[DeleteDuplicates[Accumulate[#]]&/@P,SubsetQ[{0,1},#]&];
+colsums=AllTrue[DeleteDuplicates[Accumulate[#]]&/@Transpose[P],SubsetQ[{0,1},#]&];
+Return[And[signedmatrix,rowsums,colsums]];
 ];
 
-DroopMove[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j,newP},
-newP=P;
-newP[[i0,j0]]=0;
-newP[[i0,jmax]]=1;
-newP[[imax,j0]]=1;
-newP[[imax,jmax]]=-1;
-Return[newP];
+DroopMove[P_?ASMQ,i0_,j0_,imax_,jmax_]:=Module[{i,j,Q},
+Q=P;
+Q[[i0,j0]]=0;
+Q[[i0,jmax]]=1;
+Q[[imax,j0]]=1;
+Q[[imax,jmax]]=-1;
+Return[Q];
 ];
 
-DroopMoveQ[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j, Valid},
-Valid=True;
-Valid=If[P[[i0,j0]]!=1,False, Valid];
-For[i=i0,i<=imax,i++,
-For[j=j0,j<=jmax,j++,
-Valid=If[P[[i,j]]!=0 && (i!=i0||j!=j0), False, Valid];
-];
-];
-Valid=If[ASMQ[DroopMove[P,i0,j0,imax,jmax]],Valid,False];
-Return[Valid];
+DroopMoveQ[P_?ASMQ,i0_,j0_,imax_,jmax_]:=Module[{test1,test2,test3},
+test1=(P[[i0,j0]]==1);
+test2=AllTrue[Tuples[{Range[i0,imax],Range[j0,jmax]}],P[[Sequence@@#]]==0 ||(#=={i0,j0})&];
+test3=ASMQ[DroopMove[P,i0,j0,imax,jmax]];
+Return[And[test1,test2,test3]];
 ];
 
-ReducedBumplessPipeDreams[w_?PermutationListQ]:=Module[{P0, P, BPD, NewBPD, i, j, imax, jmax,  k, n},
-P0=RotheBPD[w];
-BPD={P0};
-NewBPD=BPD;
-n=0;
-While[n!=Length[BPD],
-n=Length[BPD];
-For[j=1,j<=Length[w]-1,j++,
-For[i=1,i<=Length[w]-1,i++,
-For[jmax=j+1,jmax<=Length[w],jmax++,
-For[imax=i+1,imax<=Length[w],imax++,
-For[k=1,k<=Length[BPD],k++,
-P=If[DroopMoveQ[BPD[[k]],i,j,imax,jmax], DroopMove[BPD[[k]],i,j,imax,jmax],P0];
-If[!MemberQ[NewBPD,P]&&ASMQ[P],AppendTo[NewBPD,P]];
-DeleteDuplicates[NewBPD];
+ReducedBumplessPipeDreams[w_?PermutationListQ]:=Module[{rbpd,needtodroop,droopchoices,PossibleDroopMoves,droopoutcomes},
+rbpd={RotheBPD[w]};
+needtodroop=rbpd;
+droopchoices=Flatten[Table[{i,j,imax,jmax},{i,1,Length[w]-1},{j,1,Length[w]-1},{imax,i+1,Length[w]},{jmax,j+1,Length[w]}],3];
+PossibleDroopMoves[Q_]:=Select[droopchoices,DroopMoveQ[Q,Sequence@@#]&];
+While[Length[needtodroop]>0,
+droopoutcomes=Flatten[Table[DroopMove[P,Sequence@@#]&/@PossibleDroopMoves[P],{P,needtodroop}],1];
+rbpd=Union[rbpd,droopoutcomes];
+needtodroop=droopoutcomes;
 ];
-BPD=NewBPD;
-];
-];
-];
-];
-];
-Return[BPD];
+Return[rbpd];
 ];
 
-BPDtoPermutation[P_?ASMQ]:=Module[{i,j, k,l, a, b, word, Perm, DownElbowPositions, UpElbowPositions,VerticalPositions,HorizontalPositions, CrossPositions, temp},
-DownElbowPositions=Position[P,1];
-UpElbowPositions=Position[P,-1];
-VerticalPositions={};
-HorizontalPositions={};
-For[k=1,k<=Length[P],k++,
+FullBPDData[P_?ASMQ]:=Module[{downelbowpositions,upelbowpositions,verticalpositions,horizontalpositions,l,crosspositions,Q},
+downelbowpositions=Position[P,1];
+upelbowpositions=Position[P,-1];
+verticalpositions={};
+horizontalpositions={};
+Do[
 l=1;
-While[P[[Length[P]+1-l,k]]==0,
-If[l==1&&k==1,VerticalPositions={{Length[P]+1-l,k}},VerticalPositions=Append[VerticalPositions,{Length[P]+1-l,k}]];
+While[P[[-l,k]]==0,
+AppendTo[verticalpositions,{Length[P]+1-l,k}];
 l++;
 ];
-];
-For[k=1,k<=Length[UpElbowPositions],k++,
+,{k,1,Length[P]}];
+Do[
 l=1;
-While[P[[UpElbowPositions[[k,1]]-l,UpElbowPositions[[k,2]]]]==0,
-VerticalPositions=Append[VerticalPositions,{UpElbowPositions[[k,1]]-l,UpElbowPositions[[k,2]]}];
+While[P[[upelbowpositions[[k,1]]-l,upelbowpositions[[k,2]]]]==0,
+AppendTo[verticalpositions,{upelbowpositions[[k,1]]-l,upelbowpositions[[k,2]]}];
 l++;
 ];
-];
-For[k=1,k<=Length[DownElbowPositions],k++,
+,{k,1,Length[upelbowpositions]}];
+Do[
 l=1;
-While[DownElbowPositions[[k,2]]+l<=Length[P]&&P[[DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l]]==0,
-If[l==1&&k==1,HorizontalPositions={{DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l}},HorizontalPositions=Append[HorizontalPositions,{DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l}]];
+While[downelbowpositions[[k,2]]+l<=Length[P]&&P[[downelbowpositions[[k,1]],downelbowpositions[[k,2]]+l]]==0,
+AppendTo[horizontalpositions,{downelbowpositions[[k,1]],downelbowpositions[[k,2]]+l}];
 l++;
 ];
-];
-CrossPositions=Intersection[HorizontalPositions,VerticalPositions];
-word={};
-For[j=1,j<=Length[P],j++,
-For[i=Length[P],i>=1,i--,
-If[MemberQ[CrossPositions,{i,j}],
-word=Append[word,Sum[P[[a,b]],{a,1,i},{b,1,j}]-1]
-];
-];
-];
-Perm=Range[Length[P]];
-For[k=1,k<=Length[word],k++,
-temp=Perm[[word[[k]]+1]];
-Perm[[word[[k]]+1]]=Perm[[word[[k]]]];
-Perm[[word[[k]]]]=temp;
-];
-Return[Perm];
+,{k,1,Length[downelbowpositions]}];
+crosspositions=Intersection[horizontalpositions,verticalpositions];
+horizontalpositions=Complement[horizontalpositions,crosspositions];
+verticalpositions=Complement[verticalpositions,crosspositions];
+Q=ConstantArray["b",{Length[P],Length[P]}];
+Scan[(Q[[Sequence@@#]]="d")&,downelbowpositions];
+Scan[(Q[[Sequence@@#]]="u")&,upelbowpositions];
+Scan[(Q[[Sequence@@#]]="h")&,horizontalpositions];
+Scan[(Q[[Sequence@@#]]="v")&,verticalpositions];
+Scan[(Q[[Sequence@@#]]="c")&,crosspositions];
+Return[Q];
 ];
 
-Options[DrawBumplessPipeDream]={PipeColor->Green,Labels->True};
-DrawBumplessPipeDream[P_?ASMQ,OptionsPattern[]]:=Module[{vertgridlines,horizgridlines,DownElbowPositions, UpElbowPositions,VerticalPositions,HorizontalPositions,hline,hlines,vline,vlines,downelbow,downelbows,upelbow,upelbows,Pcrosspositions,changeofcoordinates,Crossing,crosses,lowerlabels,perm,rightlabels,picture,k,l},
+BPDtoPermutation[P_?ASMQ]:=Module[{Q,CrossPositions,orderedcrosses,word,perm},
+Q=FullBPDData[P];
+CrossPositions=Position[Q,"c"];
+orderedcrosses=Select[Flatten[Table[{j,i},{j,1,Length[P]},{i,Length[P],1,-1}],1],MemberQ[CrossPositions,Reverse[#]]&];
+word=Fold[Append[#1,Sum[P[[a,b]],{a,1,#2[[2]]},{b,1,#2[[1]]}]-1]&,{},orderedcrosses];
+perm=Range[Length[P]];
+Scan[(perm=perm[[#]])&,Table[Range[Length[P]]/.{w+1->w,w->w+1},{w,word}]];
+Return[perm];
+];
+
+Options[DrawBumplessPipeDream]={PipeColor->Blue,Labels->True,BlankColor->Green};
+DrawBumplessPipeDream[P_?ASMQ,OptionsPattern[]]:=Module[{vertgridlines,horizgridlines,Q,DownElbowPositions,UpElbowPositions,CrossPositions,VerticalPositions,HorizontalPositions,BlankPositions,changeofcoordinates,hline,hlines,vline,vlines,blank,blanks,downelbow,downelbows,upelbow,upelbows,lowerlabels,perm,rightlabels,picture},
 vertgridlines=Table[{Thick,Line[{{0,j},{Length[P],j}}]},{j,0,Length[P]}];
 horizgridlines=Table[{Thick,Line[{{j,0},{j,Length[P]}}]},{j,0,Length[P]}];
-DownElbowPositions=Position[P,1];
-UpElbowPositions=Position[P,-1];
-VerticalPositions={};
-HorizontalPositions={};
-For[k=1,k<=Length[P],k++,
-l=1;
-While[P[[Length[P]+1-l,k]]==0,
-If[l==1&&k==1,VerticalPositions={{Length[P]+1-l,k}},VerticalPositions=Append[VerticalPositions,{Length[P]+1-l,k}]];
-l++;
-];
-];
-For[k=1,k<=Length[UpElbowPositions],k++,
-l=1;
-While[P[[UpElbowPositions[[k,1]]-l,UpElbowPositions[[k,2]]]]==0,
-VerticalPositions=Append[VerticalPositions,{UpElbowPositions[[k,1]]-l,UpElbowPositions[[k,2]]}];
-l++;
-];
-];
-For[k=1,k<=Length[DownElbowPositions],k++,
-l=1;
-While[DownElbowPositions[[k,2]]+l<=Length[P]&&P[[DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l]]==0,
-If[l==1&&k==1,HorizontalPositions={{DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l}},HorizontalPositions=Append[HorizontalPositions,{DownElbowPositions[[k,1]],DownElbowPositions[[k,2]]+l}]];
-l++;
-];
-];
+Q=FullBPDData[P];
+DownElbowPositions=Position[Q,"d"];
+UpElbowPositions=Position[Q,"u"];
+CrossPositions=Position[Q,"c"];
+VerticalPositions=Join[Position[Q,"v"],CrossPositions];
+HorizontalPositions=Join[Position[Q,"h"],CrossPositions];
+BlankPositions=Position[Q,"b"];
 changeofcoordinates[{i_,j_}]:={j-1/2,Length[P]+1/2-i};
-If[HorizontalPositions!={},
 hline[{i_,j_}]:={{Thick,OptionValue[PipeColor],Line[{{i-1/2,j},{i+1/2,j}}]}};
 hlines=hline/@(changeofcoordinates/@HorizontalPositions);
-,hlines={};
-];
-If[VerticalPositions!={},
 vline[{i_,j_}]:={{Thick,OptionValue[PipeColor],Line[{{i,j-1/2},{i,j+1/2}}]}};
 vlines=vline/@(changeofcoordinates/@VerticalPositions);
-,vlines={};
-];
-If[DownElbowPositions!={},
+blank[{i_,j_}]:={{OptionValue[BlankColor],Opacity[.5],Rectangle[{i-1/2,j-1/2},{i+1/2,j+1/2}]}};
+blanks=blank/@(changeofcoordinates/@BlankPositions);
 downelbow[{i_,j_}]:={{Thick,OptionValue[PipeColor],Circle[{i+1/2,j-1/2},1/2,{Pi/2,Pi}]}};
 downelbows=downelbow/@(changeofcoordinates/@DownElbowPositions);
-,downelbows={};
-];
-If[UpElbowPositions!={},
 upelbow[{i_,j_}]:={{Thick,OptionValue[PipeColor],Circle[{i-1/2,j+1/2},1/2,{0,-Pi/2}]}};
 upelbows=upelbow/@(changeofcoordinates/@UpElbowPositions);
-,upelbows={};
-];
-lowerlabels=Table[{Text[Style[i,Large],{i-1/2,-1/5}]},{i,1,Length[P]}];
+lowerlabels=Table[{FontSize->Scaled[0.07],Text[i,{i-1/2,-3/10}]},{i,1,Length[P]}];
 perm=BPDtoDemazureProduct[P];
-rightlabels=Table[{Text[Style[perm[[i]],Large],{Length[P]+1/5,Length[P]+1/2-i}]},{i,1,Length[P]}];
-If[OptionValue[Labels],
-picture=Graphics[Join[vertgridlines,horizgridlines,vlines, hlines, upelbows,downelbows,lowerlabels,rightlabels]],
-picture=Graphics[Join[vertgridlines,horizgridlines,vlines, hlines, upelbows,downelbows]]
-];
+rightlabels=Table[{FontSize->Scaled[0.07],Text[perm[[i]],{Length[P]+1/5,Length[P]+1/2-i}]},{i,1,Length[P]}];
+picture=Graphics[Join[blanks,vertgridlines,horizgridlines,vlines,hlines,upelbows,downelbows,If[OptionValue[Labels],Join[lowerlabels,rightlabels],{}]]];
 Return[picture];
 ];
 
-kDroop1[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j,elbow, newP},
+(*************************************************************************)
+(*Not yet cleaned by Avery*)
+kDroop1[P_?MatrixQ,i0_,j0_,imax_,jmax_]:=Module[{i,j,elbow,newP},
 elbow=1;
 For[j=j0,j<=jmax-1,j++,
-elbow=If[P[[imax,j]]==1, j, elbow];
+elbow=If[P[[imax,j]]==1,j,elbow];
 ];
 newP=P;
 newP[[i0,j0]]=0;
@@ -1735,29 +1736,29 @@ newP[[i0,elbow]]=1;
 Return[newP];
 ];
 
-KDroop1Q[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j, Valid, counter},
+KDroop1Q[P_?MatrixQ,i0_,j0_,imax_,jmax_]:=Module[{i,j,Valid,counter},
 Valid=True;
-Valid=If[P[[i0,j0]]!=1,False, Valid];
-Valid=If[P[[imax,jmax]]!=-1,False, Valid];
+Valid=If[P[[i0,j0]]!=1,False,Valid];
+Valid=If[P[[imax,jmax]]!=-1,False,Valid];
 For[i=i0,i<=imax-1,i++,
 For[j=j0,j<=jmax,j++,
-Valid=If[P[[i,j]]!=0 && (i!=i0||j!=j0), False, Valid];
+Valid=If[P[[i,j]]!=0 && (i!=i0||j!=j0),False,Valid];
 ];
 ];
 counter=0;
 For[j=j0,j<=jmax-1,j++,
-counter=If[P[[imax,j]]==1, counter+1, counter];
-Valid=If[P[[imax,j]]==-1 , False, Valid];
+counter=If[P[[imax,j]]==1,counter+1,counter];
+Valid=If[P[[imax,j]]==-1 ,False,Valid];
 ];
-Valid=If[counter==1, Valid, False];
+Valid=If[counter==1,Valid,False];
 Valid=If[ASMQ[kDroop1[P,i0,j0,imax,jmax]],Valid,False];
 Return[Valid];
 ];
 
-kDroop2[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j,elbow, newP},
+kDroop2[P_?MatrixQ,i0_,j0_,imax_,jmax_]:=Module[{i,j,elbow,newP},
 elbow=1;
 For[i=i0,i<=imax-1,i++,
-elbow=If[P[[i,jmax]]==1, i, elbow];
+elbow=If[P[[i,jmax]]==1,i,elbow];
 ];
 newP=P;
 newP[[i0,j0]]=0;
@@ -1767,26 +1768,26 @@ newP[[elbow,j0]]=1;
 Return[newP];
 ];
 
-KDroop2Q[P_?MatrixQ, i0_, j0_, imax_, jmax_]:=Module[{i,j, Valid, counter},
+KDroop2Q[P_?MatrixQ,i0_,j0_,imax_,jmax_]:=Module[{i,j,Valid,counter},
 Valid=True;
-Valid=If[P[[i0,j0]]!=1,False, Valid];
-Valid=If[P[[imax,jmax]]!=-1,False, Valid];
+Valid=If[P[[i0,j0]]!=1,False,Valid];
+Valid=If[P[[imax,jmax]]!=-1,False,Valid];
 For[i=i0,i<=imax,i++,
 For[j=j0,j<=jmax-1,j++,
-Valid=If[P[[i,j]]!=0 && (i!=i0||j!=j0), False, Valid];
+Valid=If[P[[i,j]]!=0 && (i!=i0||j!=j0),False,Valid];
 ];
 ];
 counter=0;
 For[i=i0,i<=imax-1,i++,
-counter=If[P[[i,jmax]]==1, counter+1, counter];
-Valid=If[P[[i,jmax]]==-1 , False, Valid];
+counter=If[P[[i,jmax]]==1,counter+1,counter];
+Valid=If[P[[i,jmax]]==-1 ,False,Valid];
 ];
-Valid=If[counter==1, Valid, False];
+Valid=If[counter==1,Valid,False];
 Valid=If[ASMQ[kDroop2[P,i0,j0,imax,jmax]],Valid,False];
 Return[Valid];
 ];
 
-BumplessPipeDreams[w_?PermutationListQ]:=Module[{P0, P, BPD, NewBPD, i, j, imax, jmax, k, n},
+BumplessPipeDreams[w_?PermutationListQ]:=Module[{P0,P,BPD,NewBPD,i,j,imax,jmax,k,n},
 P0=RotheBPD[w];
 BPD={P0};
 NewBPD=BPD;
@@ -1798,7 +1799,7 @@ For[i=1,i<=Length[w]-1,i++,
 For[jmax=j+1,jmax<=Length[w],jmax++,
 For[imax=i+1,imax<=Length[w],imax++,
 For[k=1,k<=Length[BPD],k++,
-P=If[DroopMoveQ[BPD[[k]],i,j,imax,jmax], DroopMove[BPD[[k]],i,j,imax,jmax],P0];
+P=If[DroopMoveQ[BPD[[k]],i,j,imax,jmax],DroopMove[BPD[[k]],i,j,imax,jmax],P0];
 If[!MemberQ[NewBPD,P]&&ASMQ[P],AppendTo[NewBPD,P]];
 DeleteDuplicates[NewBPD];
 ];
@@ -1809,7 +1810,7 @@ NewBPD=BPD;
 For[jmax=j+1,jmax<=Length[w],jmax++,
 For[imax=i+1,imax<=Length[w],imax++,
 For[k=1,k<=Length[BPD],k++,
-P=If[KDroop1Q[BPD[[k]],i,j,imax,jmax], kDroop1[BPD[[k]],i,j,imax,jmax],P0];
+P=If[KDroop1Q[BPD[[k]],i,j,imax,jmax],kDroop1[BPD[[k]],i,j,imax,jmax],P0];
 If[!MemberQ[NewBPD,P]&&ASMQ[P],AppendTo[NewBPD,P]];
 DeleteDuplicates[NewBPD];
 ];
@@ -1820,34 +1821,33 @@ NewBPD=BPD;
 For[jmax=j+1,jmax<=Length[w],jmax++,
 For[imax=i+1,imax<=Length[w],imax++,
 For[k=1,k<=Length[BPD],k++,
-P=If[KDroop2Q[BPD[[k]],i,j,imax,jmax], kDroop2[BPD[[k]],i,j,imax,jmax],P0];
+P=If[KDroop2Q[BPD[[k]],i,j,imax,jmax],kDroop2[BPD[[k]],i,j,imax,jmax],P0];
 If[!MemberQ[NewBPD,P]&&ASMQ[P],AppendTo[NewBPD,P]];
 DeleteDuplicates[NewBPD];
 ];
 BPD=NewBPD;
 ];
 ];
-
 ];
 ];
 ];
 Return[BPD];
 ];
 
-PivotQ[P_?ASMQ, a_, b_, i_, j_]:=Module[{k,l, output},
+PivotQ[P_?ASMQ,a_,b_,i_,j_]:=Module[{k,l,output},
 output=True;
-output=If[P[[i,j]]!= 1, False, output];
-output=If[i<=a &&j<=b, output, False];
+output=If[P[[i,j]]!= 1,False,output];
+output=If[i<=a &&j<=b,output,False];
 For[k=i,k<=a,k++,
 For[l=j,l<=b,l++,
-output=If[P[[k,l]]!= 0&&{k,l}!={i,j}&&{k,l}!={a,b}, False, output];
+output=If[P[[k,l]]!= 0&&{k,l}!={i,j}&&{k,l}!={a,b},False,output];
 ];
 ];
 Return[output];
 ];
 
-RemovableNeg1Q[P_?ASMQ, a_, b_]:=Module[{k,l, n, output, pivots},
-output=If[P[[a,b]]!= -1, False, True];
+RemovableNeg1Q[P_?ASMQ,a_,b_]:=Module[{k,l,n,output,pivots},
+output=If[P[[a,b]]!= -1,False,True];
 pivots={};
 For[k=1,k<=a,k++,
 For[l=b,l>=1,l--,
@@ -1858,7 +1858,7 @@ If[PivotQ[P,a,b,k,l]&&{k,l}!={a,b},pivots=Append[pivots,{k,l}]
 For[n=1,n<=Length[pivots]-1,n++,
 For[k=pivots[[n,1]],k<=a,k++,
 For[l=pivots[[n+1,2]],l<=b,l++,
-output=If[P[[k,l]]== -1&&{k,l}!={a,b}, False, output];
+output=If[P[[k,l]]== -1&&{k,l}!={a,b},False,output];
 ];
 ];
 ];
@@ -1866,11 +1866,11 @@ output=If[P[[k,l]]== -1&&{k,l}!={a,b}, False, output];
 Return[output];
 ];
 
-BPDtoDemazureProduct[P_?ASMQ]:=Module[{i,j, k,l, a, b, n,  Perm, temp, pivots},
+BPDtoDemazureProduct[P_?ASMQ]:=Module[{i,j,k,l,a,b,n, Perm,temp,pivots},
 temp=P;
-For[a=1, a<=Length[temp]-1, a++,
-For[b=1, b<=Length[temp]-1, b++,
-If[RemovableNeg1Q[temp,a,b], 
+For[a=1,a<=Length[temp]-1,a++,
+For[b=1,b<=Length[temp]-1,b++,
+If[RemovableNeg1Q[temp,a,b],
 pivots={};
 For[k=1,k<=a,k++,
 For[l=b,l>=1,l--,
@@ -1889,7 +1889,6 @@ temp[[k,l]]=0;
 For[n=1,n<=Length[pivots]-1,n++,
 temp[[pivots[[n,1]],pivots[[n+1,2]]]]=1;
 ];
-
 ];
 ];
 ];
@@ -1897,21 +1896,21 @@ Perm=BPDtoPermutation[temp];
 Return[Perm];
 ];
 
-MarkedBumplessPipeDreams[w_?PermutationListQ]:=Module[{P0, P, BPD, NewBPD, i, j, imax, jmax,  k, mBPD, U, shaded},
+MarkedBumplessPipeDreams[w_?PermutationListQ]:=Module[{P0,P,BPD,NewBPD,i,j,imax,jmax, k,mBPD,U,shaded},
 BPD=BumplessPipeDreams[w];
 mBPD={};
-For[i=1, i<=Length[BPD], i++,
+For[i=1,i<=Length[BPD],i++,
 U=Position[BPD[[i]],-1];
 shaded=Subsets[U];
-For[j=1, j<=Length[shaded], j++,
-AppendTo[mBPD, {BPD[[i]],shaded[[j]]}];
+For[j=1,j<=Length[shaded],j++,
+AppendTo[mBPD,{BPD[[i]],shaded[[j]]}];
 ];
 ];
 Return[mBPD];
 ];
 
 Options[DrawMarkedBumplessPipeDream]={PipeColor->Green,Labels->True};
-DrawMarkedBumplessPipeDream[{P_?ASMQ, s_},OptionsPattern[]]:=Module[{vertgridlines,horizgridlines,DownElbowPositions, UpElbowPositions,VerticalPositions,HorizontalPositions,hline,hlines,vline,vlines,downelbow,downelbows,upelbow,upelbows,Pcrosspositions,changeofcoordinates,Crossing,crosses,lowerlabels,perm,rightlabels,picture,k,l, shade, shades},
+DrawMarkedBumplessPipeDream[{P_?ASMQ,s_},OptionsPattern[]]:=Module[{vertgridlines,horizgridlines,DownElbowPositions,UpElbowPositions,VerticalPositions,HorizontalPositions,hline,hlines,vline,vlines,downelbow,downelbows,upelbow,upelbows,Pcrosspositions,changeofcoordinates,Crossing,crosses,lowerlabels,perm,rightlabels,picture,k,l,shade,shades},
 vertgridlines=Table[{Thick,Line[{{0,j},{Length[P],j}}]},{j,0,Length[P]}];
 horizgridlines=Table[{Thick,Line[{{j,0},{j,Length[P]}}]},{j,0,Length[P]}];
 DownElbowPositions=Position[P,1];
@@ -1969,18 +1968,39 @@ perm=BPDtoDemazureProduct[P];
 rightlabels=Table[{Text[Style[perm[[i]],Large],{Length[P]+1/5,Length[P]+1/2-i}]},{i,1,Length[P]}];
 If[s=={},
 If[OptionValue[Labels],
-picture=Graphics[Join[vertgridlines,horizgridlines, vlines, hlines, upelbows,downelbows,lowerlabels,rightlabels]],
-picture=Graphics[Join[vertgridlines,horizgridlines, vlines, hlines, upelbows,downelbows]]
+picture=Graphics[Join[vertgridlines,horizgridlines,vlines,hlines,upelbows,downelbows,lowerlabels,rightlabels]],
+picture=Graphics[Join[vertgridlines,horizgridlines,vlines,hlines,upelbows,downelbows]]
 ];
 ,
 If[OptionValue[Labels],
-picture=Graphics[Join[shades, vertgridlines,horizgridlines, vlines, hlines, upelbows,downelbows,lowerlabels,rightlabels]],
-picture=Graphics[Join[shades, vertgridlines,horizgridlines, vlines, hlines, upelbows,downelbows]]
+picture=Graphics[Join[shades,vertgridlines,horizgridlines,vlines,hlines,upelbows,downelbows,lowerlabels,rightlabels]],
+picture=Graphics[Join[shades,vertgridlines,horizgridlines,vlines,hlines,upelbows,downelbows]]
 ];
 ];
 Return[picture];
 ];
 
+RandomPartition[n_Integer?(#>=0&)]:=Module[{z,rand,lambda},
+z=E^(-Pi/Sqrt[6n]);
+rand=Table[RandomVariate[GeometricDistribution[1-z^i]],{i,1,n}];
+While[Range[n] . rand!=n,
+rand=Table[RandomVariate[GeometricDistribution[1-z^i]],{i,1,n}];
+];
+lambda=Reverse@Flatten[Table[Table[i,{rand[[i]]}],{i,1,Length[rand]}],1];
+Return[lambda];
+];
+
+RandomPartition[n_Integer?(#>=0&),m_Integer?(#>=0&)]:=Module[{z,rand,lambda,l},
+lambda=RandomPartition[n];
+l=Length[lambda];
+While[l>m,
+lambda=RandomPartition[n];
+l=Length[lambda];
+];
+Return[PadRight[lambda,m]];
+];
+
+(*************************************************************************)
 End[];
 
 SetAttributes[{
@@ -2013,11 +2033,11 @@ IsobaricDividedDifference,
 LehmerCode,
 LehmerCodeToPermutation,
 OneFixedDominantQ,
-CoreRegion,
 RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
 AvoidsPattern,
+PermutationPatternIndices,
 GeneralizedPermutahedronZVector,
 GeneralizedPermutahedronInequalities,
 GeneralizedPermutahedronYVector,
@@ -2030,7 +2050,10 @@ VexillaryQ,
 DrawRotheDiagram,
 DemazureDifference,
 DemazureLascouxDifference,
+CompositionQ,
+MinimalComposition,
 KeyPolynomial,
+LascouxPolynomial,
 HomogeneousComponents,
 SymmetricPolynomialQ,
 RankMatrix,
@@ -2040,9 +2063,8 @@ XVariables,
 XBVariables,
 XYVariables,
 XYBVariables,
-BruhatOrderLessEqualCoverQ,
 SkylineDiagram,
-BalancedLabelings,
+(*BalancedLabelings,*)
 PartitionQ,
 SchurPolynomial,
 WiringDiagram,
@@ -2079,10 +2101,10 @@ FundamentalSlidePolynomial,
 Compositions,
 FundamentalSlideExpansion,
 MinimalPermutation,
+GrothendieckExpansion,
 KeyExpansion,
 SchubertExpansion,
 NorthWestDiagramMatrixQ,
-StronglySeparatedDiagramMatrixQ,
 SchubertPolynomialQ,
 PercentageAvoidingDiagramMatrixQ,
 SkewSchurPolynomial,
@@ -2092,6 +2114,8 @@ QuadraticFormToMatrix,
 LorentzianPolynomialQ,
 CheckNonnegativity,
 CheckMConvexity,
+PrintFailure,
+PrintReason,
 HeckeReduce,
 PolynomialDegree,
 RotheBPD,
@@ -2099,6 +2123,7 @@ ASMQ,
 DroopMove,
 DroopMoveQ,
 ReducedBumplessPipeDreams,
+FullBPDData,
 BPDtoPermutation,
 DrawBumplessPipeDream,
 PipeColor,
@@ -2111,8 +2136,10 @@ PivotQ,
 RemovableNeg1Q,
 BPDtoDemazureProduct,
 MarkedBumplessPipeDreams,
-DrawMarkedBumplessPipeDream
+DrawMarkedBumplessPipeDream,
+RandomPartition
 },{Protected,ReadProtected}
 ];
 
 EndPackage[];
+
