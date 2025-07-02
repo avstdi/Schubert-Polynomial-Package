@@ -38,6 +38,7 @@ IsobaricDividedDifference::usage="IsobaricDividedDifference[i,f] returns the ith
 LehmerCode::usage = "LehmerCode[w] returns the Lehmer code of the permutation w.";
 LehmerCodeToPermutation::usage = "LehmerCodeToPermutation[c] returns the permutation w with Lehmer code c.";
 OneFixedDominantQ::usage = "OneFixedDominantQ[w] returns True if w is of the form w=1w' where w' is dominant on {2,3,...,n} and False otherwise.";
+CoreRegion::usage = "CoreRegion[w] returns the core region of the permutation w,the possible squares where crosses can occur in pipe dreams.";
 RotheDiagram::usage = "RotheDiagram[w] returns the Rothe diagram of the permutation w,the set of all (i,j) in [n\!\(\*SuperscriptBox[\(]\),\(2\)]\) such that w(i)>j and \!\(\*SuperscriptBox[\(w\),\(-1\)]\)(j)>i.";
 BottomReducedPipeDream::usage = "BottomReducedPipeDream[w] returns the bottom reduced pipe dream of the permutation w.";
 TopReducedPipeDream::usage = "TopReducedPipeDream[w] returns the top reduced pipe dream of the permutation w.";
@@ -74,6 +75,8 @@ BruhatOrderLessEqualCoverQ::usage="bruhatLequalCover[w,v] returns True if w<v is
 SkylineDiagram::usage="SkylineDiagram[alpha] returns the skyline diagram of the composition alpha.";
 (*BalancedLabelings::usage="BalancedLabelings[D] returns the set of balanced labellings of the diagram D each viewed as an integer matrix.";*)
 PartitionQ::usage="PartitionQ[\[Lambda]] checks that \[Lambda] is a decreasing sequence of nonnegative numbers.";
+PartitionToGrassmannianPermutation::usage="PartitionToGrassmannianPermutation[\[Lambda]] returns the Grassmannian permutation corresponding to the partition \[Lambda]";
+GrassmannianPermutationToPartition::usage="GrassmannianPermutationToPartition[w] returns the partition corresponding to the Grassmannian permutation w.";
 SchurPolynomial::usage="SchurPolynomial[\[Lambda],n] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[n]}.\nSchurPolynomial[\[Lambda]] returns the Schur polynomial of the partition \[Lambda] in variables {x[1],...,x[m]},where \[Lambda] has m parts.";
 WiringDiagram::usage="WiringDiagram[p] returns the wiring diagram of the permutation word p=(\!\(\*SubscriptBox[\(p\),\(1\)]\),\!\(\*SubscriptBox[\(p\),\(2\)]\),...,\!\(\*SubscriptBox[\(p\),\(m\)]\)),where the \!\(\*SubscriptBox[\(p\),\(i\)]\) are positive integers.";
 Schubitope::usage="For w in \!\(\*SubscriptBox[\(S\),\(n\)]\), Schubitope[w] returns the submodular function on subsets of [n] defining the Schubitope of w. ";
@@ -102,7 +105,7 @@ PipeDreamWeight::usage="PipeDreamWeight[P] returns the weight of the pipe dream 
 Mitosis::usage="Mitosis[i,P] applies the \!\(\*SuperscriptBox[\(i\),\(th\)]\) mitosis algorithm to the pipe dream P. Setting Reduced->True or False specifices whether to return reduced pipe dreams or all pipe dreams.";
 FultonEssentialSet::usage="FultonEssentialSet[w] returns the Fulton essential set of the permutation w,that is the boxes that are SE corners in the Rothe diagram of w.";
 FundamentalSlidePolynomial::usage="FundamentalSlidePolynomial[\[Alpha]] returns the fundamental slide polynomial of alpha.";
-Compositions::usage="Compositions[n,k] returns the integer compositions of n with at most k parts.\nCompositions[n,{k}] returns the integer compositions of n with exactly k parts.";
+WeakCompositions::usage="WeakCompositions[n,k] returns the set of weak integer compositions of n with at exactly k parts.";
 FundamentalSlideExpansion::usage="FundamentalSlideExpansion[w] returns the list of compositions whose fundamental slide polynomials occur in the expansion of the Schubert polynomial of w.";
 MinimalPermutation::usage="MinimalPermutation[w] returns {w(1),...,w(n)} where w(i)=i for all i>n.";
 KeyExpansion::usage="KeyExpansion[f] returns the set of compositions whose key polynomials sum to the polynomial f.";
@@ -173,6 +176,7 @@ IsobaricDividedDifference,
 LehmerCode,
 LehmerCodeToPermutation,
 OneFixedDominantQ,
+CoreRegion,
 RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
@@ -206,6 +210,8 @@ XYBVariables,
 SkylineDiagram,
 (*BalancedLabelings,*)
 PartitionQ,
+PartitionToGrassmannianPermutation,
+GrassmannianPermutationToPartition,
 SchurPolynomial,
 WiringDiagram,
 Schubitope,
@@ -238,7 +244,7 @@ PipeDreamWeight,
 Mitosis,
 FultonEssentialSet,
 FundamentalSlidePolynomial,
-Compositions,
+WeakCompositions,
 FundamentalSlideExpansion,
 MinimalPermutation,
 GrothendieckExpansion,
@@ -468,6 +474,11 @@ If[l[[j]]>=l[[i]],l[[j]]=l[[j]]+1;];
 If[PermutationListQ[l+1],Return[l+1]];
 AppendTo[k,0];
 Goto[begin];
+];
+
+CoreRegion[w_?PermutationListQ]:=Module[{pipes},
+pipes=PipeDreams[w];
+Return[DeleteDuplicates[Flatten[Table[Position[P,1],{P,pipes}],1]]];
 ];
 
 OneFixedDominantQ[w_?PermutationListQ]:=Module[{code,decreasing},
@@ -846,6 +857,12 @@ w=Join[w,Complement[Range[n],w]];
 Return[w];
 ];
 
+GrassmannianPermutationToPartition[w_?(GrassmannianQ[#]||#==Sort[#]&)]:=Module[{slice},
+If[w==Sort[w],Return[{0}]];
+slice=w[[;;Descents[w][[1]]]];
+Return[Reverse[slice-Range@Length@slice]];
+];
+
 (*Options[SchurPolynomial]={Memoization->True};*)
 SchurPolynomial[lambda_?PartitionQ,n_Integer?Positive,OptionsPattern[]]:=Module[{l,mu,delta},
 l=Length[lambda];
@@ -882,11 +899,11 @@ Return[Graphics[Join[lines,leftlabels,rightlabels],PlotRange->{{-1,Length[word]+
 ];
 WiringDiagram[inputword_?WordQ]:=WiringDiagram[inputword,Max[inputword]+1];
 
-Options[Schubitope]={SmallestBoundingBox->False};
-Schubitope[w_?PermutationListQ,OptionsPattern[]]:=Module[{diagram,size,allSquares,word,phi,theta},
+Schubitope[w_?PermutationListQ,OptionsPattern[]]:=Module[{diagram,rows,cols,allSquares,word,phi,theta},
 diagram=RotheDiagram[w];
-size=If[OptionValue[SmallestBoundingBox],Max[diagram[[All,1]]],Max@w];
-allSquares=Tuples[Range[size],{2}];
+rows=Max[Descents[w]];
+cols=Max[w]-1;
+allSquares=Tuples[{Range@rows,Range@cols}];
 word[c_,S_]:=DeleteCases[Table[If[!MemberQ[diagram,square]&&MemberQ[S,square[[1]]],"(",If[MemberQ[diagram,square]&&!MemberQ[S,square[[1]]],")",If[MemberQ[diagram,square]&&MemberQ[S,square[[1]]],"*"]]],{square,Select[allSquares,#[[2]]==c&]}],Null];
 phi[c_,S_]:=Module[{count,wordcS,parentheses,occurences,stars},
 count=0;
@@ -901,8 +918,8 @@ occurences=StringCases[parentheses,"()"];
 stars=Length[StringCases[Apply[StringJoin,wordcS],"*"]];
 Return[count+stars];
 ];
-theta[S_]:=Sum[phi[c,S],{c,1,size}];
-Return[Association@@Table[S->theta[S],{S,Subsets[Range@size]}]];
+theta[S_]:=Sum[phi[c,S],{c,1,cols}];
+Return[Association@@Table[S->theta[S],{S,Subsets[Range@rows]}]];
 ];
 
 SchubitopeDimension[w_?PermutationListQ]:=Module[{diagram,columns,columnindices,interval,intervals,intersectingpairs,joined},
@@ -1207,8 +1224,14 @@ rothediagram=RotheDiagram[w];
 Return[Select[rothediagram,!MemberQ[rothediagram,#+{1,0}]&&!MemberQ[rothediagram,#+{0,1}]&]];
 ];
 
-Compositions[n_Integer?Positive,{k_Integer?Positive}]:=DeleteDuplicates[Flatten[Permutations/@(PadLeft[#,k]&/@IntegerPartitions[n]),1]];
-Compositions[n_Integer?Positive,k_Integer?Positive]:=DeleteDuplicates[Flatten[Compositions[n,{#}]&/@Range[k],1]];
+WeakCompositions[n_Integer?(#>=0&),k_Integer]:=Module[{vars,system,sols},
+If[k<=0,Return[{}]];
+If[n==0,Return[ConstantArray[0,k]]];
+vars=Array[x,k];
+system=Join[Thread[vars>=0],{Total[vars]==n}];
+sols=Sort[vars/.Solve[system,vars,Integers]];
+Return[sols]
+];
 
 FundamentalSlidePolynomial[alpha_?VectorQ]:=Module[{flat,dominatesQ,refinesQ,n,comps,sumover,variables},
 If[alpha=={},Return[0]];
@@ -1223,7 +1246,7 @@ positions=Flatten[Position[psa,#]&/@psb];
 Return[Sort[positions]==positions];
 ];
 n=Length[alpha];
-comps=Compositions[Total[alpha],{n}];
+comps=WeakCompositions[Total[alpha],n];
 sumover=Select[comps,dominatesQ[#,alpha]&&refinesQ[flat[#],flat[alpha]]&];
 variables=Table[x[i],{i,Range[n]}];
 Return[Total[Table[Times@@sld,{sld,Table[variables^exp,{exp,sumover}]}]]];
@@ -2033,6 +2056,7 @@ IsobaricDividedDifference,
 LehmerCode,
 LehmerCodeToPermutation,
 OneFixedDominantQ,
+CoreRegion,
 RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
@@ -2066,6 +2090,8 @@ XYBVariables,
 SkylineDiagram,
 (*BalancedLabelings,*)
 PartitionQ,
+PartitionToGrassmannianPermutation,
+GrassmannianPermutationToPartition,
 SchurPolynomial,
 WiringDiagram,
 Schubitope,
@@ -2098,7 +2124,7 @@ PipeDreamWeight,
 Mitosis,
 FultonEssentialSet,
 FundamentalSlidePolynomial,
-Compositions,
+WeakCompositions,
 FundamentalSlideExpansion,
 MinimalPermutation,
 GrothendieckExpansion,
