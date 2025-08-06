@@ -43,10 +43,12 @@ RotheDiagram::usage = "RotheDiagram[w] returns the Rothe diagram of the permutat
 BottomReducedPipeDream::usage = "BottomReducedPipeDream[w] returns the bottom reduced pipe dream of the permutation w.";
 TopReducedPipeDream::usage = "TopReducedPipeDream[w] returns the top reduced pipe dream of the permutation w.";
 AvoidsPattern::usage="AvoidsPattern[w,\[Sigma]] checks if the permutation w avoids the pattern \[Sigma].";
+ContainsPattern::usage="ContainsPattern[w,\[Sigma]] checks if the permutation w contains an instance of the pattern \[Sigma].";
 PermutationPatternIndices::usage="PermutationPatternIndices[w,\[Sigma]] returns the set of indices of instances of the pattern \[Sigma] inside the permutation w.";
-GeneralizedPermutahedronZVector::usage="GeneralizedPermutahedronZVector[pointlist] returns the \!\(\*SubscriptBox[\(z\),\(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
-GeneralizedPermutahedronInequalities::usage="GeneralizedPermutahedronInequalities[pointlist] returns the defining inequalities for the smallest generalized permutahedron containing pointlist.";
-GeneralizedPermutahedronYVector::usage="GeneralizedPermutahedronYVector[pointlist] returns the \!\(\*SubscriptBox[\(y\),\(I\)]\) values for the smallest generalized permutahedron containing pointlist.";
+CoordinateSumMaxes::usage="CoordinateSumMaxes[pointlist] returns the association f such that for a set S, f[S] equals the max over the points in pointlist of the coordinate sum over S.";
+SubmodularFunctionQ::usage="SubmodularFunctionQ[f] checks if f is an association on subsets of [n] representing a submodular function.";
+GeneralizedPermutahedronStyleInequalities::usage="GeneralizedPermutahedronStyleInequalities[pointlist] returns the inequalities where each sum of coordinates is bounded by its max over pointlist. The sum of all coordinates is assumed to be constant, and returned as an equality.";
+SimplexDecomposition::usage="SimplexDecomposition[pointlist] returns the decomposition of the input integral pointlist into a signed sum of coordinate simplices. If pointlist is the integer points in a type-Z generalized permutahedron, then SimplexDecomposition returns the Y-presentation of pointlist.";
 MConvexSetQ::usage="MConvexSetQ[J] checks whether or not J is an M-convex set,that is if J is exactly the set of integer points of a generalized permutahedron.";
 Coefficients::usage="Coefficients[poly,vars] returns a list of the coefficients of the monomials occuring in the polynomial poly relative to the variables vars.\nCoefficients[poly] returns a list of the coefficients of monomials occuring in the polynomial poly relative to the variables detected in poly.";
 Exponents::usage="Exponents[poly,vars] returns a list of the exponent vectors of the polynomial poly relative to the variables vars.\nExponents[poly] returns a list of the exponent vectors of the polynomial poly relative to the variables detected in poly.";
@@ -120,7 +122,7 @@ QuadraticFormToMatrix::usage="QuadraticFormToMatrix[f,n] takes a quadratic form 
 LorentzianPolynomialQ::usage="LorentzianPolynomialQ[h] checks whether the polynomial h is Lorentzian. That is,whether h has nonnegative coefficients,M-convex support,and satisfies the relevant derivative condition.";
 CheckNonnegativity::usage="CheckNonnegativity is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable the checking of nonnegative coefficients in the input polynomial. The defualt value is True.";
 CheckMConvexity::usage="CheckMConvexity is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable the checking of M-convexity of the support of the input polynomial. The defualt value is True.";
-PrintFailure::usage="PrintFailure is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable printing the witness derivative sequence of the spectral condition failing in the input polynomial. The defualt value is False.";
+PrintFailure::usage="PrintFailure is an option to various **...**Q named functions that can be set to True or False to enable or disable printing the witness to a False return value. The defualt value is False.";
 PrintReason::usage="PrintReason is an option to LorentzianPolynomialQ, that can be set to True or False to enable or disable printing the reason the the input polynomial is not Lorentzian. The defualt value is False.";
 HeckeReduce::usage="HeckeReduce[r] reduces the integer word r using the nilHecke relations \!\(\*SuperscriptBox[SubscriptBox[\(s\),\(i\)],\(2\)]\)=\!\(\*SubscriptBox[\(s\),\(i\)]\),\!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(i + 1\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\)=\!\(\*SubscriptBox[\(s\),\(i + 1\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(i + 1\)]\),and \!\(\*SubscriptBox[\(s\),\(i\)]\)\!\(\*SubscriptBox[\(s\),\(j\)]\)=\!\(\*SubscriptBox[\(s\),\(j\)]\)\!\(\*SubscriptBox[\(s\),\(i\)]\) (if |i-j|>1).";
 PolynomialDegree::usage="PolynomialDegree[f] returns the degree of the multivariable polynomial f.";
@@ -181,10 +183,12 @@ RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
 AvoidsPattern,
+ContainsPattern,
 PermutationPatternIndices,
-GeneralizedPermutahedronZVector,
-GeneralizedPermutahedronInequalities,
-GeneralizedPermutahedronYVector,
+CoordinateSumMaxes,
+SubmodularFunctionQ,
+GeneralizedPermutahedronStyleInequalities,
+SimplexDecomposition,
 MConvexSetQ,
 Coefficients,
 Exponents,
@@ -519,6 +523,8 @@ patterns=Table[p/.Thread[Sort[p]->Range[Length[p]]],{p,subpermutations}];
 Return[!MemberQ[patterns,\[Sigma]]];
 ];
 
+ContainsPattern[w_?PermutationListQ,\[Sigma]_?PermutationListQ]:=!AvoidsPattern[w,\[Sigma]];
+
 PermutationPatternIndices[w_?PermutationListQ,\[Sigma]_?PermutationListQ]:=Module[{n,m,subsets,subpermutations,patterns,indices},
 n=Length[w];
 m=Length[\[Sigma]];
@@ -529,74 +535,69 @@ patterns=Table[p/.Thread[Sort[p]->Range[Length[p]]],{p,subpermutations}];
 Return[subsets[[Flatten[Position[patterns,\[Sigma]]]]]];
 ];
 
-(*
-GeneralizedPermutahedronInequalities[list_?MatrixQ]:=Module[{subsets,lowerbound,zvector,zz,inequalities},
-subsets=Subsets[Range[Length[list[[1]]]]];
-lowerbound[I_]:=Min[Map[Total,list[[All,I]]]];
-zvector=lowerbound/@subsets;
-zz[set_]:=zvector[[Position[subsets,set][[1,1]]]];
-inequalities=Table[Sum[t[i],{i,I}]>=zz[I],{I,Delete[Delete[subsets,1],-1]}];
-AppendTo[inequalities,Sum[t[i],{i,1,Length[list[[1]]]}]==zz[subsets[[-1]]]];
-Return[inequalities];
-];
-*)
-
-GeneralizedPermutahedronYVector[list_?MatrixQ]:=Module[{subsets,upperbound,zvector,zz,inequalities,answers,yvector},
-subsets=Subsets[Range[Length[list[[1]]]]];
-upperbound[I_]:=Max[Map[Total,list[[All,I]]]];
-zvector=upperbound/@subsets;
-zz[set_]:=zvector[[Position[subsets,set][[1,1]]]];
-inequalities=Table[Sum[t[i],{i,I}]<=zz[I],{I,Delete[Delete[subsets,1],-1]}];
-AppendTo[inequalities,Sum[t[i],{i,1,Length[list[[1]]]}]==zz[subsets[[-1]]]];
-yvector=Table[Sum[(-1)^(Length[Complement[I,J]])zz[J],{J,Select[subsets,SubsetQ[I,#]&]}],{I,subsets}];
-Return[yvector];
+SimplexDecomposition[list_?MatrixQ]:=Module[{zz,subsets,yy},
+zz=CoordinateSumMaxes[list];
+subsets=Sort[Keys[zz]];
+yy=Association[];
+Table[yy[I]=Sum[(-1)^(Length[Complement[I,J]])zz[J],{J,Select[subsets,SubsetQ[I,#]&]}],{I,subsets}];
+Return[Select[yy,#!=0&]];
 ];
 
-GeneralizedPermutahedronZVector[list_?MatrixQ]:=Module[{subsets,upperbound,zvector},
+CoordinateSumMaxes::homogeneity="Input vectors are not homogeneous.";
+CoordinateSumMaxes[list1_?MatrixQ]:=Module[{n,list,zz,subsets,upperbound,zvector},
+If[Length[DeleteDuplicates[Total/@list1]]>1,
+Message[CoordinateSumMaxes::homogeneity];
+Return[$Failed];
+];
+n=Max[Length/@list1];
+list=PadRight[#,n]&/@list1;
+zz=Association[];
 subsets=Subsets[Range[Length[list[[1]]]]];
 upperbound[I_]:=Max[Map[Total,list[[All,I]]]];
-zvector=upperbound/@subsets;
-Return[zvector];
+Table[zz[S]=upperbound[S],{S,subsets}];
+Return[zz];
 ];
 
-SubmodularVectorQ[zvect_?VectorQ]:=Module[{len,I,J,posI,posJ,posIuJ,posIJ,results,subsets,pairs,ddresults},
-len=Log[2,Length[zvect]];
-subsets=Subsets[Range[len]];
-pairs=Tuples[subsets,{2}];
-results=Reap[Do[{I,J}=set;
-posI=Position[subsets,I][[1,1]];
-posJ=Position[subsets,J][[1,1]];
-posIuJ=Position[subsets,Union[I,J]][[1,1]];
-posIJ=Position[subsets,Intersection[I,J]][[1,1]];
-Sow[zvect[[posI]]+zvect[[posJ]]>=zvect[[posIJ]]+zvect[[posIuJ]]];,{set,pairs}]][[2,1]];
-ddresults=DeleteDuplicates[results];
-Return[Length[ddresults]==1&&ddresults[[1]]==True];
+Options[SubmodularFunctionQ]={PrintFailure->False};
+SubmodularFunctionQ[zz_?AssociationQ,OptionsPattern[]]:=Module[{subsets,pairs,results,I,J,failures},
+subsets=Keys[zz];
+pairs=Subsets[subsets,{2}];
+results=Association[];
+Table[
+{I,J}=pair;
+results[pair]=(zz[I]+zz[J]>=zz[Intersection[I,J]]+zz[Union[I,J]]);
+,{pair,pairs}];
+If[And@@Values[results],Return[True]];
+failures=Select[results,!#&];
+If[OptionValue[PrintFailure],
+Print["Failure of submodularity witnessed by ",Keys[failures][[1]]];
+];
+Return[False];
 ];
 
-GeneralizedPermutahedronInequalities[list_?MatrixQ]:=Module[{subsets,upperbound,zvector,zz,inequalities},
-subsets=Subsets[Range[Length[list[[1]]]]];
-upperbound[I_]:=Max[Map[Total,list[[All,I]]]];
-zvector=upperbound/@subsets;
-zz[set_]:=zvector[[Position[subsets,set][[1,1]]]];
-inequalities=Table[Sum[t[i],{i,I}]<=zz[I],{I,Delete[Delete[subsets,1],-1]}];
-AppendTo[inequalities,Sum[t[i],{i,1,Length[list[[1]]]}]==zz[subsets[[-1]]]];
-Return[inequalities];
+GeneralizedPermutahedronStyleInequalities[list_?MatrixQ]:=Module[{f,n,ineqs},
+f=CoordinateSumMaxes[list];
+n=Max[Length/@Keys[f]];
+ineqs=Append[Table[Sum[t[s],{s,S}]<=f[S],{S,Select[Keys[f],n>Length[#]>0&]}],Sum[t[s],{s,1,n}]==f[Range[n]]];
+Return[ineqs];
 ];
 
-MConvexSetQ[list_?(MatrixQ[#,IntegerQ]&)]:=Module[{subsets,upperbound,zvector,zz,inequalities,answers,saturated,submodular},
+Options[MConvexSetQ]={PrintReason->False,PrintFailure->False};
+MConvexSetQ[list_?(MatrixQ[#,IntegerQ]&),OptionsPattern[]]:=Module[{zz,submodular,n,inequalities,vars,answers,saturated},
 If[list=={},Return[True]];
-If[!MatrixQ[list,NumberQ],Return[False]];
-If[Length[DeleteDuplicates[Total/@list]]!=1,Return[False]];
-subsets=Subsets[Range[Length[list[[1]]]]];
-upperbound[I_]:=Max[Map[Total,list[[All,I]]]];
-zvector=upperbound/@subsets;
-submodular=SubmodularVectorQ[zvector];
-If[!submodular,Return[False]];
-zz[set_]:=zvector[[Position[subsets,set][[1,1]]]];
-inequalities=Table[Sum[t[i],{i,I}]<=zz[I],{I,Delete[Delete[subsets,1],-1]}];
-AppendTo[inequalities,Sum[t[i],{i,1,Length[list[[1]]]}]==zz[subsets[[-1]]]];
-answers=Table[t[i],{i,1,Length[list[[1]]]}]/.Solve[inequalities,Table[t[i],{i,1,Length[list[[1]]]}],Integers];
+zz=CoordinateSumMaxes[list];
+submodular=SubmodularFunctionQ[zz,PrintFailure->OptionValue[PrintFailure]];
+If[!submodular,
+If[OptionValue[PrintReason],Print["Associated upper bound coordinate sum function is not submodular."]];
+Return[False];
+];
+n=Max[Length/@Keys[zz]];
+inequalities=Append[Table[Sum[t[s],{s,S}]<=zz[S],{S,Select[Keys[zz],n>Length[#]>0&]}],Sum[t[s],{s,1,n}]==zz[Range[n]]];
+vars=Table[t[i],{i,Range[n]}];
+answers=vars/.Solve[Join[inequalities,Thread[vars>=0]],vars,Integers];
 saturated=(Sort[answers]==Sort[DeleteDuplicates[list]]);
+If[OptionValue[PrintReason],Print["Smallest integral generalized permutahedra containing input set has additional points."]];
+If[OptionValue[PrintFailure],Print[Complement[answers,DeleteDuplicates[list]][[1]]," is missing from the input set."]];
 Return[saturated];
 ];
 
@@ -2061,10 +2062,12 @@ RotheDiagram,
 BottomReducedPipeDream,
 TopReducedPipeDream,
 AvoidsPattern,
+ContainsPattern,
 PermutationPatternIndices,
-GeneralizedPermutahedronZVector,
-GeneralizedPermutahedronInequalities,
-GeneralizedPermutahedronYVector,
+CoordinateSumMaxes,
+SubmodularFunctionQ,
+GeneralizedPermutahedronStyleInequalities,
+SimplexDecomposition,
 MConvexSetQ,
 Coefficients,
 Exponents,
